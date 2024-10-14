@@ -1,0 +1,32 @@
+.button-group {
+  display: flex;
+  justify-content: flex-start;
+  background-color: #1C1C1E; /* Matt black background for the group */
+  padding: 40px 20px;
+  gap:30px
+}
+  
+.button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background-color:lightgray;/* Default button background */
+  color: black; /* Text color */
+  font-size: 16px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+  
+.button:last-child {
+  margin-right: 0;
+}
+
+.button:hover {
+  background-color: lightgreen; /* Hover effect */
+}
+
+.active {
+  background-color: lightgreen; /* Active button background, greenish */
+  color: black;
+}

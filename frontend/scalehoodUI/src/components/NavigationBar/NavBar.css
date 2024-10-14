@@ -1,0 +1,40 @@
+.hoodlogo {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.app-name{
+  color: #FF3B30;
+  font-size: 30px;
+}
+
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1C1C1E;
+  padding: 10px 20px;
+  max-width: 1000px; /* Set the maximum width */
+  margin: 0 auto; /* Center the header */
+}
+
+.userGreetings{
+  color:white;
+  font-weight: bold;
+  font-size: 20;
+}
+
+.search-container {
+  flex-grow: 1;
+  margin: 20px 20px;
+}
+
+.search-bar {
+  width: 700px;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #2C3E50; /* Slightly lighter background */
+  color: #E0E0E0
+}
+
