@@ -38,7 +38,7 @@ export default function FinancialMetrics() {
   }, []);
 
   return (
-    <Box sx={{ display: 'flex', gap: 2, backgroundColor: '#1C1C1E' }}>
+    <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column', backgroundColor: '#3C3C3E' }}>
 
       <BalanceCard total_balance={data.total_balance}/>
       <IncomeCard weekly_income={data.weekly_income}/>

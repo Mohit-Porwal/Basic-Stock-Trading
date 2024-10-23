@@ -27,7 +27,7 @@ export default function HomePage() {
                   setActiveView={setActiveView} 
                   buttons={buttonData} 
               />
-              <div>
+              <div style = {{display: 'flex', gap: '50px', marginTop: '10px'}}>
                   {/* Conditionally render components based on the active button */}
                   {activeView === 'Home' && (
                       <>

@@ -14,10 +14,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 export default function TradeCard() {
 
-  const [method, setAge] = React.useState('');
+  const [method, setMethod] = React.useState('Dollars'); // Default to Dollars
+  const [amount, setAmount] = React.useState(''); // To store the amount or shares value
 
-  const handleChange = (event) => {
-    setAge(event.target.value);
+  const handleMethodChange = (event) => {
+    setMethod(event.target.value);
+  };
+
+  const handleAmountChange = (event) => {
+    setAmount(event.target.value);
   };
 
   return (
@@ -29,7 +34,7 @@ export default function TradeCard() {
         </Typography>
 
         {/* Code for Basic Select materialUI */}
-        <Box sx={{ width: '50%', marginTop: '20px'}}>
+        <Box sx={{ width: '100%', marginTop: '20px' }}>
           <FormControl fullWidth>
             <InputLabel id="demo-simple-select-label">Invest in</InputLabel>
             <Select
@@ -37,26 +42,36 @@ export default function TradeCard() {
               id="demo-simple-select"
               value={method}
               label="Invest in"
-              onChange={handleChange}
+              onChange={handleMethodChange}
             >
               <MenuItem value="Dollars">Dollars</MenuItem>
               <MenuItem value="Shares">Shares</MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth sx={{ m: 1 }}>
-            <InputLabel htmlFor="outlined-adornment-amount">Amount</InputLabel>
+          
+          {/* FormControl for Amount/Shares Input */}
+          <FormControl fullWidth sx={{ marginTop: '16px' }}>
+            <InputLabel htmlFor="outlined-adornment-amount">
+              {method === 'Dollars' ? 'Amount in Dollars' : 'Shares'}
+            </InputLabel>
             <OutlinedInput
               id="outlined-adornment-amount"
-              startAdornment={<InputAdornment position="start">$</InputAdornment>}
-              label="Amount"
+              value={amount}
+              onChange={handleAmountChange}
+              startAdornment={
+                <InputAdornment position="start">
+                  {method === 'Dollars' ? '$' : ''}
+                </InputAdornment>
+              }
+              label={method === 'Dollars' ? 'Amount in Dollars' : 'Shares'}
+              type="number" // Ensure the user can only input numbers
             />
           </FormControl>
         </Box>
       </CardContent>
       <CardActions>
-        <Button size="small">Learn More</Button>
+        <Button sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}>Buy</Button>
       </CardActions>
     </Card>
   );
 }
-  

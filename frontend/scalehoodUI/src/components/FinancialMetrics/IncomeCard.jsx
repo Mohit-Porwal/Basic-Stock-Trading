@@ -10,7 +10,17 @@ export default function IncomeCard(weekly_income) {
   const userWeeklyIncome = weekly_income.weekly_income
 
   return (
-    <Card sx={{ width: 275, backgroundColor: '#EAF6FF' }}>
+    <Card sx={{ 
+      width: 180,         // Diameter of the circle
+      height: 180,        // Equal to width for circular shape
+      backgroundColor: '#EAF6FF',
+      borderRadius: '50%', // Circular shape
+      display: 'flex',     // To center the content
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)', // Optional shadow for depth
+    }}>
       <CardContent>
         {/* Title */}
         <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
