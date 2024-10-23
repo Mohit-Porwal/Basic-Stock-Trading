@@ -6,7 +6,7 @@ import FinancialMetrics from '../../components/FinancialMetrics/Cards';
 import RecentTransactions from '../../components/RecentTransactions/RecentTransactions';
 import Portfolio from '../../components/Portfolio/Portfolio';
 import '../../global.css'
-
+import LatestStocks from '../../components/LatestStocks/LatestStocks';
 
 
 export default function HomePage() {
@@ -33,6 +33,7 @@ export default function HomePage() {
                       <>
                           <FinancialMetrics/>
                           <RecentTransactions/>
+                          <LatestStocks/>
                       </>
                   )}
                   {activeView === 'Portfolio' && (
