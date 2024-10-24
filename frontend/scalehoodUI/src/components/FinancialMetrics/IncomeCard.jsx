@@ -20,6 +20,7 @@ export default function IncomeCard(weekly_income) {
       alignItems: 'center',
       justifyContent: 'center',
       boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)', // Optional shadow for depth
+      border: '15px solid #007BFF',
     }}>
       <CardContent>
         {/* Title */}
