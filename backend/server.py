@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 import yfinance as yf
+from utils import *
 
 app = Flask(__name__)
 CORS(app) 
@@ -12,6 +13,8 @@ app.config['MYSQL_USER'] = 'root'
 app.config['MYSQL_PASSWORD'] = 'mohit'
 app.config['MYSQL_DB'] = 'sellscale'
 
+sectors = ['technology', 'healthcare', 'real-estate']
+sector_wise_top_companies = {}
 
 @app.route('/',methods=['GET'])
 def home():
@@ -32,14 +35,24 @@ def home():
 
     #Get Recent transactions.
     cur.execute("SELECT * FROM transactions WHERE user_id=1 ORDER BY timestamp DESC LIMIT 4");
-    transaction_details = cur.fetchone()
-    recent_transactions = transaction_details[0]
+    transaction_details = cur.fetchall()
+    recent_transactions = transaction_details
+    
+    #Banner information
+    #In total we will have 4 types of cards here
+    #Top companies of each of the three sectors (total 3 cards. One card for each sector)
+    #Latest stocks
+    sector_wise_top_companies = get_top_companies(sectors)
+    latest_stocks = get_latest_stocks(sectors)
 
+    #Payload for home page
     response_data = {
         "total_balance": total_balance,
-        "recent_transactions": recent_transactions
+        "recent_transactions": recent_transactions,
+        "sector_wise_top_companies": sector_wise_top_companies,
+        "latest_stocks": latest_stocks
     }
-    
+
     return jsonify(response_data)
     
 
