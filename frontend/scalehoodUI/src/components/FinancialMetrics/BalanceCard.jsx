@@ -5,9 +5,11 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function BalanceCard(total_balance) {
+export default function BalanceCard({totalBalance}) {
 
-  const userCurrentBalance = total_balance.total_balance;
+  //const userCurrentBalance = total_balance.total_balance;
+
+  const userCurrentBalance = totalBalance;
 
   return (
     <Card

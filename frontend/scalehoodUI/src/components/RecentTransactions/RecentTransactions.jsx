@@ -84,7 +84,7 @@ export default function RecentTransactions() {
         backgroundColor: '#20C997', // Match the background
         color: '333333', // Text color to contrast
         padding: '16px',
-       
+        marginBottom: '20px',
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.2)', // Add shadow for depth
       }}
     >
