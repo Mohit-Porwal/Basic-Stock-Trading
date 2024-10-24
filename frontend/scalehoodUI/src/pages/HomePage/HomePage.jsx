@@ -8,7 +8,6 @@ import Portfolio from '../../components/Portfolio/Portfolio';
 import '../../global.css'
 import LatestStocks from '../../components/LatestStocks/LatestStocks';
 
-
 export default function HomePage() {
     const [activeView, setActiveView] = useState('Home'); // Default to 'Home' view
 
@@ -23,7 +22,6 @@ export default function HomePage() {
     useEffect(() => {
         const fetchData = async () => {
             console.log("FETCH DATA HAS BEEN CALLED");
-
             try {
                 const response = await fetch('http://127.0.0.1:5000?user_id=1'); 
 
@@ -31,7 +29,7 @@ export default function HomePage() {
 
                 const result = await response.json();
 
-                console.log("THIS IS THE RESULT "+result);
+                console.log("THIS IS THE RESULT "+ JSON.stringify(result));
 
                 setData(result);
             } catch (error) {
@@ -59,7 +57,11 @@ export default function HomePage() {
                             totalBalance = {data.total_balance}
                             weeklyIncome = {''}
                             weeklyExpense = {''}/>
-                            <RecentTransactions/>
+                            {data.recent_transactions && Array.isArray(data.recent_transactions) && (
+                                <RecentTransactions
+                                    recentTransactions={data.recent_transactions}
+                                />
+                            )}
                             <LatestStocks/>
                         </>
                     )}
@@ -72,30 +74,5 @@ export default function HomePage() {
     );
 }
 
-// export default function HomePage() {
-//   const [activeView, setActiveView] = useState('Home'); // Default to 'Home' view
-
-//   return (
-//     <div>
-//       <NavBar/>
-//       <div style={{margin: 'auto', maxWidth: 1000}}>
-//         {/* Pass the activeView and setter function to ButtonGroup */}
-//         <ButtonGroup activeView={activeView} setActiveView={setActiveView} />
-//         <div>
-//           {/* Conditionally render components based on the active button */}
-//           {activeView === 'Home' && (
-//             <>
-//               <FinancialMetrics/>
-//               <RecentTransactions/>
-//             </>
-//           )}
-//           {activeView === 'Portfolio' && (
-//             <Portfolio/>
-//           )}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
 
 
