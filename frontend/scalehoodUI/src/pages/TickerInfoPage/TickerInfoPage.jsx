@@ -30,19 +30,24 @@ export default function TickerInfoPage(){
 
     return(
         <div>
-            <Header currentPrice={tickerData.current_price}/>
-            <Graph/>
-            <About summary={tickerData.summary}/>
-            <CompanyInfo 
-            marketcap={tickerData.marketcap} 
-            fullTimeEmployees={tickerData.fulltime_employees}
-            ceo={tickerData.ceo}
-            headquarters={tickerData.headquarters}
-            dividendYield={tickerData.dividendYield}
-            averageVolume={tickerData.avg_volume}
-            earningsGrowth={tickerData.earnings_growth}
-            grossMargins={tickerData.gross_margins}
-            />
+            {/* Conditionally render each component based on tickerData availability */}
+            {tickerData && (
+                <>
+                    <Header currentPrice={tickerData.current_price} tickerName={ticker} />
+                    <Graph />
+                    <About summary={tickerData.summary} />
+                    <CompanyInfo 
+                        marketcap={tickerData.marketcap} 
+                        fullTimeEmployees={tickerData.fulltime_employees}
+                        ceo={tickerData.ceo}
+                        headquarters={tickerData.headquarters}
+                        dividendYield={tickerData.dividend_yield}
+                        averageVolume={tickerData.avg_volume}
+                        earningsGrowth={tickerData.earnings_growth}
+                        grossMargins={tickerData.gross_margins}
+                    />
+                </>
+            )}
         </div>
     )
 }

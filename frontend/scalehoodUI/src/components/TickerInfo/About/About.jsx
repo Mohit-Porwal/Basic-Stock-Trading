@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent, Typography, Button } from '@mui/material';
 
-export default function About(){
+export default function About({summary}){
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const aboutText = `Our company has been a leader in the industry for over 20 years, specializing in high-quality solutions for a diverse range of clients.
-  We pride ourselves on innovation, integrity, and customer satisfaction. From our humble beginnings, we've expanded our reach globally, always focusing on
-  delivering cutting-edge technology and exceptional service. Our team of experts is dedicated to pushing the boundaries of what’s possible, ensuring that we
-  remain at the forefront of industry trends. As we continue to grow, we remain committed to our core values and the continuous improvement of our services.`;
+  const aboutText = summary;
 
   // Function to toggle the "Read More" and "Read Less" state
   const toggleReadMore = () => {
@@ -15,7 +12,7 @@ export default function About(){
   };
 
   return (
-    <Card sx={{ maxWidth: 600, margin: '20px auto', padding: '16px' }}>
+    <Card sx={{ width: '45%', margin: 'auto', padding: '16px', marginBottom: '20px' }}>
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           About Us
