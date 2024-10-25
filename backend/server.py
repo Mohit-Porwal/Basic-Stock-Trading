@@ -60,9 +60,23 @@ def home():
 def tickerInfo(ticker):
 
     stock = yf.Ticker(ticker)
+
+    #Data for graph
+    oneDay_history = stock.history(period="1d")
+    one_week_history = stock.history(period="5d")
+    one_month_history = stock.history(period="1mo")
+    three_month_history = stock.history(period="3mo")
+    one_year_history = stock.history(period="1y")
+    five_year_history = stock.history(period="5y")
+
+    graph = {'1d':oneDay_history, '5d': one_week_history, '1mo': one_month_history, '3mo': three_month_history, '1y': one_year_history, '5y': five_year_history}
+
     ticker_info = stock.info
 
+    #Data for header
     current_price = ticker_info['currentPrice']
+
+    #Data for company info
     marketcap = ticker_info['marketCap']
     fulltime_employees = ticker_info['fullTimeEmployees']
     ceo = ticker_info['companyOfficers'][0]['name']
@@ -71,6 +85,8 @@ def tickerInfo(ticker):
     avg_volume = ticker_info['averageVolume']
     earnings_growth = ticker_info['earningsGrowth']
     gross_margins = ticker_info['grossMargins']
+
+    #Data for about section
     summary = ticker_info['longBusinessSummary']
 
     return jsonify({
