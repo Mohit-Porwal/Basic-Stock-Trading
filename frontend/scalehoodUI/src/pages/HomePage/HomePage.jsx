@@ -6,7 +6,7 @@ import FinancialMetrics from '../../components/FinancialMetrics/Cards';
 import RecentTransactions from '../../components/RecentTransactions/RecentTransactions';
 import Portfolio from '../../components/Portfolio/Portfolio';
 import '../../global.css'
-import LatestStocks from '../../components/LatestStocks/LatestStocks';
+import Banner from '../../components/Banner/Banner';
 
 export default function HomePage() {
     const [activeView, setActiveView] = useState('Home'); // Default to 'Home' view
@@ -62,7 +62,10 @@ export default function HomePage() {
                                     recentTransactions={data.recent_transactions}
                                 />
                             )}
-                            <LatestStocks/>
+                            {/* Render Banner only when sector_wise_top_companies is available */}
+                            {data.sector_wise_top_companies && (
+                                <Banner sectorWiseTopCompanies={data.sector_wise_top_companies} latestStocks={data.latest_stocks}/>
+                            )}
                         </>
                     )}
                     {activeView === 'Portfolio' && (

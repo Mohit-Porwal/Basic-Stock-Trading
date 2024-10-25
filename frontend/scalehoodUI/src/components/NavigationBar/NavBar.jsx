@@ -1,6 +1,18 @@
 import './NavBar.css'
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
+import React from 'react'
 export default function NavBar(){
+
+    const[ticker, setTicker] = useState('');
+    const navigate = useNavigate();
+
+    const onSubmit = (event) => {
+        if(event.key === 'Enter' && ticker.trim()!== ''){
+            navigate(`/tickerInfo/${ticker}`);
+        }
+    }
 
     return(
         <div className="header">
@@ -18,6 +30,9 @@ export default function NavBar(){
                 type="text"
                 placeholder='Search Tickers'
                 className= "search-bar"
+                value={ticker}
+                onChange={(e) => setTicker(e.target.value)}
+                onKeyUp={onSubmit}  // Trigger search on Enter
             />
             </div>
 
