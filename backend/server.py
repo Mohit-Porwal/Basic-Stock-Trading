@@ -58,25 +58,31 @@ def home():
 
 @app.route('/tickerInfo/<ticker>',methods=['GET'])
 def tickerInfo(ticker):
-    
+
     stock = yf.Ticker(ticker)
     ticker_info = stock.info
 
+    current_price = ticker_info['currentPrice']
     marketcap = ticker_info['marketCap']
     fulltime_employees = ticker_info['fullTimeEmployees']
     ceo = ticker_info['companyOfficers'][0]['name']
     headquarters = ticker_info['city']+", "+ticker_info['state']
     dividend_yield = ticker_info['dividendYield']
     avg_volume = ticker_info['averageVolume']
+    earnings_growth = ticker_info['earningsGrowth']
+    gross_margins = ticker_info['grossMargins']
     summary = ticker_info['longBusinessSummary']
 
     return jsonify({
+        "current_price": current_price,
         "marketcap": marketcap,
         "fulltime_employees": fulltime_employees,
         "ceo": ceo,
         "headquarters": headquarters,
         "dividend_yield": dividend_yield,
         "avg_volume": avg_volume,
+        "earnings_growth": earnings_growth,
+        "gross_margins": gross_margins,
         "summary": summary
     })
 
