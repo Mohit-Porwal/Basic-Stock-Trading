@@ -12,7 +12,7 @@ export default function About({summary}){
   };
 
   return (
-    <Card sx={{ width: '45%', margin: 'auto', padding: '16px', marginBottom: '20px' }}>
+    <Card sx={{ width: '45%', margin: 'auto', padding: '16px', marginBottom: '20px', borderRadius: '10px' }}>
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom>
           About Us
