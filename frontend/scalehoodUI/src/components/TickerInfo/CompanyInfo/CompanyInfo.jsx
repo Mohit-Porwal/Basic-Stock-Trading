@@ -3,7 +3,7 @@ import { Box, Typography, ListItemText } from '@mui/material';
 
 const CompanyInfo = ({ marketcap, fullTimeEmployees, ceo, headquarters, dividendYield, averageVolume, earningsGrowth, grossMargins }) => {
   return (
-    <Box sx={{ padding: '40px', backgroundColor: '#f0f0f0', width: '45%', margin: 'auto', borderRadius: '10px', marginBottom: '30px' }}>
+    <Box sx={{ padding: '20px', backgroundColor: '#f0f0f0', width: '70%', margin: 'auto', borderRadius: '10px', marginBottom: '30px' }}>
       {/* First Row */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', marginBottom: '20px' }}>
         <ListItemText

@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import React from 'react';
 import HomePage from './pages/HomePage/HomePage.jsx';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage.jsx';
-import TradePage from './pages/TradePage/TradePage.jsx';
+
 
 import './index.css'
 import TickerInfoPage from './pages/TickerInfoPage/TickerInfoPage.jsx';
@@ -17,10 +17,6 @@ const router = createBrowserRouter([
   {
     path:'/tickerInfo/:ticker',
     element: <TickerInfoPage/>
-  },
-  {
-    path:'/trade',
-    element: <TradePage/>
   }
 ])
 createRoot(document.getElementById('root')).render(
