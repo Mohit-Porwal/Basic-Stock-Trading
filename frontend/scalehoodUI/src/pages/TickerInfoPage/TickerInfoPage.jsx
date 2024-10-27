@@ -12,7 +12,8 @@ export default function TickerInfoPage(){
 
     const[tickerData, setTickerData] = useState(null);
 
-    const { ticker } = useParams();
+    const { ticker: tickerParam } = useParams();  // Retrieve the parameter first
+    const ticker = tickerParam.toUpperCase();  // Convert it to uppercase immediately
 
     const[activeView, setActiveView] = useState('Buy');
 
@@ -64,7 +65,7 @@ export default function TickerInfoPage(){
                 {tickerData && (
                     <>
                         <ButtonGroup activeView={activeView} setActiveView={setActiveView} buttons={buttonData}/>
-                        <TradeCard tickerName={ticker} tickerPrice={tickerData.current_price}/>
+                        <TradeCard tickerName={ticker} tickerPrice={tickerData.current_price} activeView={activeView}/>
                     </>
 
                 )}

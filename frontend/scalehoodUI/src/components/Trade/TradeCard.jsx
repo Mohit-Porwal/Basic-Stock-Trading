@@ -13,7 +13,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useState } from 'react';
 
-export default function TradeCard({ tickerName, tickerPrice }) {
+export default function TradeCard({ tickerName, tickerPrice, activeView }) {
 
   //const [method, setMethod] = useState('Dollars'); // Default to Dollars
   const [amount, setAmount] = useState(''); // To store the amount or shares value
@@ -49,12 +49,16 @@ export default function TradeCard({ tickerName, tickerPrice }) {
       return `Estimated Cost: $${estimatedAmount}`;
     }
   }
+
+  const handleTransaction = () => {
+    
+  }
   return (
     <Card sx={{ width: 275, backgroundColor: '#EAF6FF' }}>
       <CardContent>
         {/* Title */}
         <Typography gutterBottom sx={{ color: 'black', fontSize: 20 }}>
-          Buy {tickerName}
+          {activeView} {tickerName}
         </Typography>
 
         {/* Code for Basic Select materialUI */}
@@ -101,7 +105,9 @@ export default function TradeCard({ tickerName, tickerPrice }) {
       )}
       
       <CardActions>
-        <Button sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}>Buy</Button>
+        <Button 
+        sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}
+        onClick={handleTransaction}>{activeView}</Button>
       </CardActions>
     </Card>
   );
