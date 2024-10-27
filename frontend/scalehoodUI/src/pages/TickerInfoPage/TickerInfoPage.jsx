@@ -28,7 +28,7 @@ export default function TickerInfoPage(){
             try{
                 const response = await fetch(`http://127.0.0.1:5000/tickerInfo/${ticker}`);
                 const data = await response.json();
-                console.log("Data "+ JSON.stringify(data));
+                //console.log("Data "+ JSON.stringify(data));
                 setTickerData(data);
             }catch(error){
                 console.error("Error fetching data", error);
@@ -61,8 +61,13 @@ export default function TickerInfoPage(){
                 )}
             </div>
             <div style={{marginTop : '20px'}}>
-                <ButtonGroup activeView={activeView} setActiveView={setActiveView} buttons={buttonData}/>
-                <TradeCard/>
+                {tickerData && (
+                    <>
+                        <ButtonGroup activeView={activeView} setActiveView={setActiveView} buttons={buttonData}/>
+                        <TradeCard tickerName={ticker} tickerPrice={tickerData.current_price}/>
+                    </>
+
+                )}
                 {/* <div>
                     {activeView === 'Buy' && <BuyComponent />}
                     {activeView === 'Sell' && <SellComponent />}

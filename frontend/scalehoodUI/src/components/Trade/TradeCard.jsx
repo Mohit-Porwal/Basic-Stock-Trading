@@ -11,26 +11,50 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useState } from 'react';
 
-export default function TradeCard() {
+export default function TradeCard({ tickerName, tickerPrice }) {
 
-  const [method, setMethod] = React.useState('Dollars'); // Default to Dollars
-  const [amount, setAmount] = React.useState(''); // To store the amount or shares value
+  //const [method, setMethod] = useState('Dollars'); // Default to Dollars
+  const [amount, setAmount] = useState(''); // To store the amount or shares value
+
+  const [dollars, setDollars] = useState(true);
+  const [shares, setShares] = useState(false);
+  const [purchaseType, setpurchaseType] = useState('Dollars');
 
   const handleMethodChange = (event) => {
-    setMethod(event.target.value);
+
+    if(event.target.value==='Dollars'){
+      setDollars(true);
+      setShares(false);
+      setpurchaseType('Dollars');
+    }
+    else{
+      setShares(true);
+      setDollars(false);
+      setpurchaseType('Shares');
+    }
   };
 
   const handleAmountChange = (event) => {
     setAmount(event.target.value);
   };
 
+  const getEstimate = () => {
+    if(dollars){
+      const estimatedQty = amount/tickerPrice;
+      return `Estimated Qty: ${estimatedQty} shares`;
+    }else{
+      const estimatedAmount = amount*tickerPrice;
+      return `Estimated Cost: $${estimatedAmount}`;
+    }
+  }
   return (
     <Card sx={{ width: 275, backgroundColor: '#EAF6FF' }}>
       <CardContent>
         {/* Title */}
         <Typography gutterBottom sx={{ color: 'black', fontSize: 20 }}>
-          Buy ticker name
+          Buy {tickerName}
         </Typography>
 
         {/* Code for Basic Select materialUI */}
@@ -40,7 +64,7 @@ export default function TradeCard() {
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={method}
+              value={purchaseType}
               label="Invest in"
               onChange={handleMethodChange}
             >
@@ -52,23 +76,30 @@ export default function TradeCard() {
           {/* FormControl for Amount/Shares Input */}
           <FormControl fullWidth sx={{ marginTop: '16px' }}>
             <InputLabel htmlFor="outlined-adornment-amount">
-              {method === 'Dollars' ? 'Amount in Dollars' : 'Shares'}
+              {purchaseType === 'Dollars' ? 'Amount in Dollars' : 'Number of Shares'}
             </InputLabel>
             <OutlinedInput
               id="outlined-adornment-amount"
               value={amount}
               onChange={handleAmountChange}
-              startAdornment={
+              endAdornment={
                 <InputAdornment position="start">
-                  {method === 'Dollars' ? '$' : ''}
+                  {purchaseType}
                 </InputAdornment>
               }
-              label={method === 'Dollars' ? 'Amount in Dollars' : 'Shares'}
+              label={purchaseType === 'Dollars' ? 'Amount in Dollars' : 'Number of Shares'}
               type="number" // Ensure the user can only input numbers
             />
           </FormControl>
         </Box>
       </CardContent>
+
+      {amount && (
+        <Box sx={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: 'gray' }}>
+          {getEstimate()}
+        </Box>
+      )}
+      
       <CardActions>
         <Button sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}>Buy</Button>
       </CardActions>
