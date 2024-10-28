@@ -69,10 +69,6 @@ export default function TickerInfoPage(){
                     </>
 
                 )}
-                {/* <div>
-                    {activeView === 'Buy' && <BuyComponent />}
-                    {activeView === 'Sell' && <SellComponent />}
-                </div> */}
             </div>
         </div>
     )

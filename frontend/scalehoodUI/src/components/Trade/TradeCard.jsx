@@ -12,6 +12,10 @@ import Select from '@mui/material/Select';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import { useState } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 export default function TradeCard({ tickerName, tickerPrice, activeView }) {
 
@@ -21,6 +25,10 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   const [dollars, setDollars] = useState(true);
   const [shares, setShares] = useState(false);
   const [purchaseType, setpurchaseType] = useState('Dollars');
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMessage, setDialogMessage] = useState('');
 
   const handleMethodChange = (event) => {
 
@@ -43,16 +51,70 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   const getEstimate = () => {
     if(dollars){
       const estimatedQty = amount/tickerPrice;
-      return `Estimated Qty: ${estimatedQty} shares`;
+      return `Estimated Qty: ${estimatedQty.toFixed(2)} shares`;
     }else{
       const estimatedAmount = amount*tickerPrice;
-      return `Estimated Cost: $${estimatedAmount}`;
+      return `Estimated Cost: $${estimatedAmount.toFixed(2)}`;
     }
   }
 
-  const handleTransaction = () => {
-    
+  const payload = {
+    user_id: 1,
+    transaction_type: activeView,
+    ticker: tickerName,
+    quantity: 0,
+    transaction_amount: 0,
+    price: tickerPrice,
   }
+
+  const handleTransaction = async () => {
+    if(activeView==='Buy'){
+      const numericAmount = parseFloat(amount);
+      //handle payload content based on transaction type
+      payload.quantity = parseFloat((numericAmount/tickerPrice).toFixed(2));
+      payload.transaction_amount = numericAmount;
+
+      //send POST request to trade route in backend
+      const response = await fetch('http://127.0.0.1:5000/trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      //if success, show success message
+      //if failure, show insufficient funds message
+
+      // if (response.ok) {
+      //   const responseData = await response.json();
+      //   setDialogMessage(responseData.message); // Set dialog message
+      //   setDialogOpen(true); // Open dialog
+      // } else {
+      //   // Handle failure
+      //   setDialogMessage('Transaction failed. Please check your funds.'); // Set error message
+      //   setDialogOpen(true); // Open dialog
+      // }
+      if (response.ok) {
+        const responseData = await response.json();
+        setDialogMessage(responseData.message); // Success message
+      } else {
+        // Parse the error response and display it
+        const errorData = await response.json();
+        setDialogMessage(errorData.message || "Transaction failed. Please check your funds.");
+      }
+
+      setDialogOpen(true); 
+    }
+    else{
+      //handle payload content based on transaction type
+      payload.quantity = amount;
+      payload.transaction_amount = estimatedAmount;
+    }
+  }
+
+  const handleDialogClose = () => {
+    setDialogOpen(false); // Close dialog
+  };
+
   return (
     <Card sx={{ width: 275, backgroundColor: '#EAF6FF' }}>
       <CardContent>
@@ -109,6 +171,21 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
         sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}
         onClick={handleTransaction}>{activeView}</Button>
       </CardActions>
+
+      {/* Dialog for displaying messages */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>{activeView} Transaction</DialogTitle>
+        <DialogContent>
+          <Typography>{dialogMessage}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+
     </Card>
+
   );
 }
