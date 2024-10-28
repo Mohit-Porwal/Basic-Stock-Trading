@@ -16,6 +16,7 @@ app.config['MYSQL_DB'] = 'sellscale'
 
 sectors = ['technology', 'healthcare', 'real-estate']
 sector_wise_top_companies = {}
+DEFAULT_PLACEHOLDER = "Data not available"
 
 @app.route('/',methods=['GET'])
 def home():
@@ -74,21 +75,21 @@ def tickerInfo(ticker):
 
     ticker_info = stock.info
 
-    #Data for header
-    current_price = ticker_info['currentPrice']
+    # Data for header
+    current_price = ticker_info.get('currentPrice', DEFAULT_PLACEHOLDER)
 
-    #Data for company info
-    marketcap = ticker_info['marketCap']
-    fulltime_employees = ticker_info['fullTimeEmployees']
-    ceo = ticker_info['companyOfficers'][0]['name']
-    headquarters = ticker_info['city']+", "+ticker_info['state']
-    dividend_yield = ticker_info['dividendYield']
-    avg_volume = ticker_info['averageVolume']
-    earnings_growth = ticker_info['earningsGrowth']
-    gross_margins = ticker_info['grossMargins']
+    # Data for company info
+    marketcap = ticker_info.get('marketCap', DEFAULT_PLACEHOLDER)
+    fulltime_employees = ticker_info.get('fullTimeEmployees', DEFAULT_PLACEHOLDER)
+    ceo = ticker_info.get('companyOfficers', [{}])[0].get('name', DEFAULT_PLACEHOLDER)  # Using [{}] to prevent IndexError
+    headquarters = ticker_info.get('city', "") + ", " + ticker_info.get('state', DEFAULT_PLACEHOLDER)
+    dividend_yield = ticker_info.get('dividendYield', DEFAULT_PLACEHOLDER)
+    avg_volume = ticker_info.get('averageVolume', DEFAULT_PLACEHOLDER)
+    earnings_growth = ticker_info.get('earningsGrowth', DEFAULT_PLACEHOLDER)
+    gross_margins = ticker_info.get('grossMargins', DEFAULT_PLACEHOLDER)
 
-    #Data for about section
-    summary = ticker_info['longBusinessSummary']
+    # Data for about section
+    summary = ticker_info.get('longBusinessSummary', DEFAULT_PLACEHOLDER)
 
     return jsonify({
         "current_price": current_price,
