@@ -68,47 +68,40 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   }
 
   const handleTransaction = async () => {
-    if(activeView==='Buy'){
-      const numericAmount = parseFloat(amount);
-      //handle payload content based on transaction type
+
+    const numericAmount = parseFloat(amount);
+
+    //Modify quantity and transaction amount based on investment type
+    if(dollars){
       payload.quantity = parseFloat((numericAmount/tickerPrice).toFixed(2));
       payload.transaction_amount = numericAmount;
-
-      //send POST request to trade route in backend
-      const response = await fetch('http://127.0.0.1:5000/trade', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      //if success, show success message
-      //if failure, show insufficient funds message
-
-      // if (response.ok) {
-      //   const responseData = await response.json();
-      //   setDialogMessage(responseData.message); // Set dialog message
-      //   setDialogOpen(true); // Open dialog
-      // } else {
-      //   // Handle failure
-      //   setDialogMessage('Transaction failed. Please check your funds.'); // Set error message
-      //   setDialogOpen(true); // Open dialog
-      // }
-      if (response.ok) {
-        const responseData = await response.json();
-        setDialogMessage(responseData.message); // Success message
-      } else {
-        // Parse the error response and display it
-        const errorData = await response.json();
-        setDialogMessage(errorData.message || "Transaction failed. Please check your funds.");
-      }
-
-      setDialogOpen(true); 
     }
-    else{
-      //handle payload content based on transaction type
-      payload.quantity = amount;
-      payload.transaction_amount = estimatedAmount;
+
+    if(shares){
+      payload.transaction_amount = numericAmount*tickerPrice;
+      payload.quantity = numericAmount;
     }
+
+    //handle payload content based on transaction type and send POST request to trade route in backend
+    const response = await fetch('http://127.0.0.1:5000/trade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    //if success, show success message
+    //if failure, show insufficient funds message
+
+    if (response.ok) {
+      const responseData = await response.json();
+      setDialogMessage(responseData.message); // Success message
+    } else {
+      // Parse the error response and display it
+      const errorData = await response.json();
+      setDialogMessage(errorData.error || "Transaction failed due to infufficient funds!");
+    }
+    setDialogOpen(true); 
+    
   }
 
   const handleDialogClose = () => {
