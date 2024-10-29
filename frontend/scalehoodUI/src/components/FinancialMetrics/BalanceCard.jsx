@@ -115,9 +115,6 @@ export default function BalanceCard({ totalBalance }) {
           ${totalBalance}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small" sx={{ color: '#007BFF', fontWeight: 'bold' }}>Learn More</Button>
-      </CardActions>
     </Card>
   );
 }

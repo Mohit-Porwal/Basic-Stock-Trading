@@ -55,8 +55,8 @@ export default function HomePage() {
                         <>
                             <FinancialMetrics 
                             totalBalance = {data.total_balance}
-                            weeklyIncome = {''}
-                            weeklyExpense = {''}/>
+                            weeklyIncome = {data.weekly_income}
+                            weeklyExpense = {data.weekly_expense}/>
                             {data.recent_transactions && Array.isArray(data.recent_transactions) && (
                                 <RecentTransactions
                                     recentTransactions={data.recent_transactions}

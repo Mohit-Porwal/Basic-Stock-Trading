@@ -5,9 +5,9 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function IncomeCard(weekly_income) {
+export default function IncomeCard( {weeklyIncome} ) {
 
-  const userWeeklyIncome = weekly_income.weekly_income
+  const userWeeklyIncome = weeklyIncome;
 
   return (
     <Card sx={{ 
@@ -23,19 +23,16 @@ export default function IncomeCard(weekly_income) {
       // border: '15px solid #007BFF',
       border: '10px solid #6bcab5'
     }}>
-      <CardContent>
+      <CardContent sx={{ textAlign: 'center' }}>
         {/* Title */}
-        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
-          Income
+        <Typography gutterBottom sx={{ color: '#33333', fontSize: 14 }}>
+          Weekly Income
         </Typography>
         {/* Amount */}
-        <Typography variant="h5" component="div">
-          {userWeeklyIncome}
+        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
+          ${userWeeklyIncome}
         </Typography>
       </CardContent>
-      <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions>
     </Card>
   );
 }
