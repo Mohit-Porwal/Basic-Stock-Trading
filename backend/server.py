@@ -36,7 +36,7 @@ def home():
 
 
     #Get Recent transactions.
-    cur.execute("SELECT * FROM transactions WHERE user_id=1 ORDER BY timestamp DESC LIMIT 4");
+    cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5',(user_id,));
     transaction_details = cur.fetchall()
     recent_transactions = transaction_details
     
@@ -147,7 +147,8 @@ def trade():
                     try:
                         if portfolio_details:
                             new_quantity = portfolio_details[0] + quantity
-                            cur.execute('UPDATE portfolio SET quantity = %s WHERE user_id = %s AND ticker = %s', (new_quantity, user_id, ticker))
+                            new_average_price = get_new_average_price(cur, user_id, quantity, price, ticker)
+                            cur.execute('UPDATE portfolio SET quantity = %s, average_price = %s WHERE user_id = %s AND ticker = %s', (new_quantity, new_average_price, user_id, ticker))
                         else:
                             cur.execute('INSERT INTO portfolio (user_id, ticker, quantity, average_price) VALUES (%s, %s, %s, %s)', (user_id, ticker, quantity, price))
                     
@@ -203,9 +204,29 @@ def trade():
 
     else:
         return jsonify({"error": "Invalid request method, only POST is allowed"}), 405
+    
+    # cur.close()
+def get_new_average_price(cur, user_id, quantity, price, ticker):
 
+    #Get current average price and current shares owned
+    cur.execute('SELECT quantity, average_price FROM portfolio WHERE user_id = %s AND ticker = %s',(user_id, ticker,))
+    operands = cur.fetchone()
+    total_cost_before = operands[0] * operands[1]
 
-    #cur.close()
+    #Get the new additional cost from new transaction
+    additional_cost = quantity * price
+
+    #Get new total cost
+    new_total_cost = total_cost_before + additional_cost
+
+    #Get new total shares owned
+    new_total_shares_owned = operands[0] + quantity
+
+    #Calculate new average price
+    new_average_price = new_total_cost/new_total_shares_owned
+
+    return new_average_price
+
 
 @app.route('/portfolio',methods=['GET'])
 def portfolio():
