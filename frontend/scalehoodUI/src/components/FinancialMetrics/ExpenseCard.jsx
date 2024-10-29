@@ -13,14 +13,15 @@ export default function ExpenseCard(weekly_expense) {
     <Card sx={{ 
       width: 180,         // Diameter of the circle
       height: 180,        // Equal to width for circular shape
-      backgroundColor: '#EAF6FF',
+      backgroundColor: 'lightgray',
       borderRadius: '50%', // Circular shape
       display: 'flex',     // To center the content
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)', // Optional shadow for depth
-      border: '15px solid #007BFF',
+      // border: '15px solid #007BFF',
+      border: '10px solid #6bcab5'
      }}>
       <CardContent>
         {/* Title */}
