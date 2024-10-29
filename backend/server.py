@@ -55,6 +55,7 @@ def home():
         "latest_stocks": latest_stocks
     }
 
+    cur.close()
     return jsonify(response_data)
     
 
@@ -122,6 +123,7 @@ def trade():
         price = Decimal(transaction_details.get('price'))  # Adding 'price' to handle it
 
         if not (user_id and transaction_type and ticker and quantity and transaction_amount):
+            cur.close()
             return jsonify({"error": "Missing transaction details"}), 400
 
         try:
@@ -134,6 +136,7 @@ def trade():
                     current_balance = Decimal(user_details[0])
 
                     if transaction_amount > current_balance:
+                        cur.close()
                         return jsonify({"error": 'Insufficient funds'}), 400
 
                     # Update user's total balance
@@ -159,8 +162,10 @@ def trade():
                     cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type) VALUES (%s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type))
 
                     mysql.connection.commit()
+                    cur.close()
                     return jsonify({"message": "Purchase successful"}), 200
                 else:
+                    cur.close()
                     return jsonify({"error": "Please try again later"}), 404
 
             elif transaction_type == 'SELL':
@@ -189,20 +194,26 @@ def trade():
                         cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type) VALUES (%s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type))
 
                         mysql.connection.commit()
+                        cur.close()
                         return jsonify({"message": "Sale successful"}), 200
                     else:
+                        cur.close()
                         return jsonify({"error": "Please try again later"}), 404
                 else:
+                    cur.close()
                     return jsonify({"error": "You currently do not have sufficient stocks to sell"}), 400
 
             else:
+                cur.close()
                 return jsonify({"error": "Invalid trade type"}), 400
         
         except Exception as e:
             # Log the error if necessary (e.g., using logging module)
+            cur.close()
             return jsonify({"error": "An error occurred while processing your request."}), 500
 
     else:
+        cur.close()
         return jsonify({"error": "Invalid request method, only POST is allowed"}), 405
     
     # cur.close()
@@ -238,9 +249,9 @@ def portfolio():
     #to get the list of all previously bought stocks
     cur.execute('SELECT ticker,quantity,average_price FROM portfolio WHERE user_id= %s',(user_id,))
     portfolio = cur.fetchall()
-    cur.close()
 
     # Return the user's portfolio as JSON
+    cur.close()
     return jsonify({"portfolio": portfolio})
 
 if __name__=="__main__":
