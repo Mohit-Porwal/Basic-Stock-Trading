@@ -30,10 +30,14 @@ def home():
     total_balance = user_details[0]
 
     #Get income in the last week
+    cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
+    income = cur.fetchone()
+    weekly_income = income[0]
     
-
     #Get expense in the last week
-
+    cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
+    expense = cur.fetchone()
+    weekly_expense = expense[0]
 
     #Get Recent transactions.
     cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5',(user_id,));
@@ -52,7 +56,9 @@ def home():
         "total_balance": total_balance,
         "recent_transactions": recent_transactions,
         "sector_wise_top_companies": sector_wise_top_companies,
-        "latest_stocks": latest_stocks
+        "latest_stocks": latest_stocks,
+        "weekly_income": weekly_income,
+        "weekly_expense": weekly_expense,
     }
 
     cur.close()
@@ -159,7 +165,7 @@ def trade():
                         print("Error:", e) 
                     
                     # Record the transaction
-                    cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type) VALUES (%s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type))
+                    cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type, transaction_amount))
 
                     mysql.connection.commit()
                     cur.close()
@@ -191,7 +197,7 @@ def trade():
                             cur.execute('UPDATE portfolio SET quantity = %s WHERE user_id = %s AND ticker = %s', (new_quantity, user_id, ticker))
 
                         # Record the transaction
-                        cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type) VALUES (%s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type))
+                        cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type, transaction_amount))
 
                         mysql.connection.commit()
                         cur.close()
@@ -209,6 +215,7 @@ def trade():
         
         except Exception as e:
             # Log the error if necessary (e.g., using logging module)
+            print(e)
             cur.close()
             return jsonify({"error": "An error occurred while processing your request."}), 500
 
