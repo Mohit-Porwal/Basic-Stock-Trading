@@ -13,7 +13,7 @@ export default function ExpenseCard( {weeklyExpense} ) {
     <Card sx={{ 
       width: 180,         // Diameter of the circle
       height: 180,        // Equal to width for circular shape
-      backgroundColor: 'lightgray',
+      backgroundColor: '#1b263b',
       borderRadius: '50%', // Circular shape
       display: 'flex',     // To center the content
       flexDirection: 'column',
@@ -21,15 +21,15 @@ export default function ExpenseCard( {weeklyExpense} ) {
       justifyContent: 'center',
       boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)', // Optional shadow for depth
       // border: '15px solid #007BFF',
-      border: '10px solid #6bcab5'
+      border: '10px solid #1b263b'
      }}>
       <CardContent sx={{ textAlign: 'center' }}>
         {/* Title */}
-        <Typography gutterBottom sx={{ color: '#33333', fontSize: 14 }}>
+        <Typography gutterBottom sx={{ color: '#6bcab5', fontSize: 14 }}>
           Weekly Expense
         </Typography>
         {/* Amount */}
-        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
+        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#6bcab5' }}>
           ${userWeeklyExpense}
         </Typography>
       </CardContent>

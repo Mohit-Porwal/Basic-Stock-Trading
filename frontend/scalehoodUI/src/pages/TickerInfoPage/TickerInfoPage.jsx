@@ -45,7 +45,7 @@ export default function TickerInfoPage(){
                 {/* Conditionally render each component based on tickerData availability */}
                 {tickerData && (
                     <>
-                        <Header currentPrice={tickerData.current_price} tickerName={ticker} />
+                        <Header currentPrice={tickerData.current_price} tickerName={ticker} companyName={tickerData.company_name}/>
                         <Graph />
                         <About summary={tickerData.summary} />
                         <CompanyInfo 

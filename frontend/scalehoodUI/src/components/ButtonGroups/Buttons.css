@@ -1,6 +1,6 @@
 .button-group {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   background-color: #3C3C3E; /* Matt black background for the group */
   padding: 40px 20px;
   gap:30px;
@@ -24,10 +24,10 @@
 }
 
 .button:hover {
-  background-color: lightgreen; /* Hover effect */
+  background-color: #6bcab5; /* Hover effect */
 }
 
 .active {
-  background-color: lightgreen; /* Active button background, greenish */
+  background-color: #6bcab5; /* Active button background, greenish */
   color: black;
 }

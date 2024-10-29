@@ -96,7 +96,7 @@ export default function BalanceCard({ totalBalance }) {
         width: 180,
         height: 180,
         // backgroundColor: '#EAF6FF',
-        backgroundColor: 'lightgray',
+        backgroundColor: '#1b263b',
         borderRadius: '50%',
         display: 'flex',
         flexDirection: 'column',
@@ -104,14 +104,14 @@ export default function BalanceCard({ totalBalance }) {
         justifyContent: 'center',
         boxShadow: '0 10px 16px rgba(31, 38, 135, 0.3)',
         // border: '10px solid #007BFF',
-        border: '10px solid #6bcab5'
+        border: '10px solid #1b263b'
       }}
     >
       <CardContent sx={{ textAlign: 'center' }}>
-        <Typography gutterBottom sx={{ color: '#33333', fontSize: 14 }}>
+        <Typography gutterBottom sx={{ color: '#6bcab5', fontSize: 14 }}>
           Your Balance
         </Typography>
-        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: 'black' }}>
+        <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#6bcab5' }}>
           ${totalBalance}
         </Typography>
       </CardContent>
