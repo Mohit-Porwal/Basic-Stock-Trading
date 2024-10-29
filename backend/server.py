@@ -71,19 +71,20 @@ def tickerInfo(ticker):
     stock = yf.Ticker(ticker)
 
     #Data for graph
-    oneDay_history = stock.history(period="1d")
-    one_week_history = stock.history(period="5d")
-    one_month_history = stock.history(period="1mo")
-    three_month_history = stock.history(period="3mo")
-    one_year_history = stock.history(period="1y")
-    five_year_history = stock.history(period="5y")
+    # oneDay_history = stock.history(period="1d")
+    # one_week_history = stock.history(period="5d")
+    # one_month_history = stock.history(period="1mo")
+    # three_month_history = stock.history(period="3mo")
+    # one_year_history = stock.history(period="1y")
+    # five_year_history = stock.history(period="5y")
 
-    graph = {'1d':oneDay_history, '5d': one_week_history, '1mo': one_month_history, '3mo': three_month_history, '1y': one_year_history, '5y': five_year_history}
+    # graph = {'1d':oneDay_history, '5d': one_week_history, '1mo': one_month_history, '3mo': three_month_history, '1y': one_year_history, '5y': five_year_history}
 
     ticker_info = stock.info
 
     # Data for header
     current_price = ticker_info.get('currentPrice', DEFAULT_PLACEHOLDER)
+    company_name = ticker_info.get('longName',' ')
 
     # Data for company info
     marketcap = ticker_info.get('marketCap', DEFAULT_PLACEHOLDER)
@@ -100,6 +101,7 @@ def tickerInfo(ticker):
 
     return jsonify({
         "current_price": current_price,
+        "company_name": company_name,
         "marketcap": marketcap,
         "fulltime_employees": fulltime_employees,
         "ceo": ceo,
@@ -215,7 +217,6 @@ def trade():
         
         except Exception as e:
             # Log the error if necessary (e.g., using logging module)
-            print(e)
             cur.close()
             return jsonify({"error": "An error occurred while processing your request."}), 500
 
@@ -260,6 +261,14 @@ def portfolio():
     # Return the user's portfolio as JSON
     cur.close()
     return jsonify({"portfolio": portfolio})
+
+    #total worth of all the investments
+    #Stock ticker symbol
+    #Company name
+    #Quantity owned
+    #average purchased price
+    #current price
+
 
 if __name__=="__main__":
     app.run(debug=True)
