@@ -109,52 +109,78 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   };
 
   return (
-    <Card sx={{ width: 275, backgroundColor: '#EAF6FF' }}>
+    <Card sx={{ width: 275, backgroundColor: '#1b263b' }}>
       <CardContent>
         {/* Title */}
-        <Typography gutterBottom sx={{ color: 'black', fontSize: 20 }}>
+        <Typography gutterBottom sx={{ color: '#6bcab5', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>
           {activeView} {tickerName}
         </Typography>
 
         {/* Code for Basic Select materialUI */}
         <Box sx={{ width: '100%', marginTop: '20px' }}>
-          <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Invest in</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={purchaseType}
-              label="Invest in"
-              onChange={handleMethodChange}
-            >
-              <MenuItem value="Dollars">Dollars</MenuItem>
-              <MenuItem value="Shares">Shares</MenuItem>
-            </Select>
+          <FormControl fullWidth sx={{ color: '#6bcab5' }}>
+            <InputLabel id="demo-simple-select-label" sx={{ color: '#6bcab5' }}>Invest in</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={purchaseType}
+                label="Invest in"
+                sx={{
+                  color: '#6bcab5',
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#6bcab5', // Sets border color to green
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#6bcab5', // Keeps border green on hover
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#6bcab5', // Keeps border green when focused
+                  },
+                  '& .MuiSelect-icon': {
+                    color: '#6bcab5', // Sets dropdown arrow color to green
+                  },
+                }}
+                onChange={handleMethodChange}
+              >
+                <MenuItem value="Dollars">Dollars</MenuItem>
+                <MenuItem value="Shares">Shares</MenuItem>
+              </Select>
           </FormControl>
           
+
           {/* FormControl for Amount/Shares Input */}
           <FormControl fullWidth sx={{ marginTop: '16px' }}>
-            <InputLabel htmlFor="outlined-adornment-amount">
+            <InputLabel htmlFor="outlined-adornment-amount" sx={{ color: '#6bcab5' }}>
               {purchaseType === 'Dollars' ? 'Amount in Dollars' : 'Number of Shares'}
             </InputLabel>
             <OutlinedInput
               id="outlined-adornment-amount"
               value={amount}
+              sx={{
+                color: '#6bcab5',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#6bcab5',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#6bcab5',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#6bcab5',
+                },
+                '& .MuiInputAdornment-root': {
+                  color: '#6bcab5', // Sets label "Shares" color to green
+                },
+              }}
               onChange={handleAmountChange}
-              endAdornment={
-                <InputAdornment position="start">
-                  {purchaseType}
-                </InputAdornment>
-              }
               label={purchaseType === 'Dollars' ? 'Amount in Dollars' : 'Number of Shares'}
-              type="number" // Ensure the user can only input numbers
+              type="number"
             />
           </FormControl>
         </Box>
       </CardContent>
 
       {amount && (
-        <Box sx={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: 'gray' }}>
+        <Box sx={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#6bcab5' }}>
           {getEstimate()}
         </Box>
       )}
