@@ -55,7 +55,7 @@
 //Chat gpt recommended 
 
 import React from 'react';
-import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider, Box } from '@mui/material';
+import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 export default function Banner({ sectorWiseTopCompanies }) {
   const [selectedSector, setSelectedSector] = React.useState(null);
