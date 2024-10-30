@@ -95,31 +95,26 @@ def home():
     user_id = request.args.get('user_id')
     
     # Get total balance of the user's account
-    start_time = time()
     cur.execute('SELECT total_balance FROM users WHERE id = %s', (user_id,))
     user_details = cur.fetchone()
     total_balance = user_details[0]
 
     # Get income in the last week
-    start_time = time()
     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
     income = cur.fetchone()
     weekly_income = income[0]
     
     # Get expense in the last week
-    start_time = time()
     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
     expense = cur.fetchone()
     weekly_expense = expense[0]
 
     # Get recent transactions
-    start_time = time()
     cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5', (user_id,))
     transaction_details = cur.fetchall()
     recent_transactions = transaction_details
     
     # Banner information
-    start_time = time()
     sector_wise_top_companies = get_top_companies(sectors)
 
     # start_time = time()
@@ -130,7 +125,6 @@ def home():
         "total_balance": total_balance,
         "recent_transactions": recent_transactions,
         "sector_wise_top_companies": sector_wise_top_companies,
-        # "latest_stocks": latest_stocks,
         "weekly_income": weekly_income,
         "weekly_expense": weekly_expense,
     }
@@ -324,16 +318,18 @@ def get_new_average_price(cur, user_id, quantity, price, ticker):
 def portfolio():
 
     cur = mysql.connection.cursor()
-
     user_id = request.args.get('user_id')
 
     #to get the list of all previously bought stocks
     cur.execute('SELECT ticker, quantity, average_price FROM portfolio WHERE user_id= %s',(user_id,))
     portfolio = cur.fetchall()
+
+    formatted_portfolio = [{"ticker": object[0], "quantity": object[1], "average_price": object[2]} for object in portfolio]
+    print(formatted_portfolio)
     
     # Return the user's portfolio as JSON
     cur.close()
-    return jsonify({"portfolio": portfolio})
+    return jsonify({"portfolio": formatted_portfolio})
 
     #total worth of all the investments
     #Stock ticker symbol

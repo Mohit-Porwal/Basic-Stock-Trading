@@ -55,14 +55,4 @@ def get_top_companies(sectors):
         companies[sector] = top_companies_list[:10]
     return companies
 
-# def get_latest_stocks(sectors):
-#     stock_price = {}
-#     for sector in sectors:
-#         top_companies = (yf.Sector(sector)).top_companies
-#         ticker_list = top_companies.index.tolist()
-#     for ticker in ticker_list:   
-#         ticker_info = (yf.Ticker(ticker)).info
-#         ticker_price = ticker_info['currentPrice']
-#         stock_price[ticker] = ticker_price
-#     return dict(random.sample(list(stock_price.items()), 10))
 
