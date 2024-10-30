@@ -12,7 +12,7 @@ export default function About({summary}){
   };
 
   return (
-    <Card sx={{ width: '70%', margin: 'auto', padding: '20px', marginBottom: '20px', borderRadius: '10px', backgroundColor: '#1b263b', color: '#6bcab5'}}>
+    <Card sx={{ width: '70%', margin: 'auto', padding: '20px', marginBottom: '20px', borderRadius: '10px', backgroundColor: '#F8F9FA', color: '#6bcab5'}}>
       <CardContent>
         <Typography variant="h5" component="div" gutterBottom fontWeight={'bold'}>
           About Us

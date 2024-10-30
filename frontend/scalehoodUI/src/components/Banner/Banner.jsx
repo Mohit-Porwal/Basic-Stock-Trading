@@ -73,7 +73,7 @@ export default function Banner({ sectorWiseTopCompanies }) {
       sx={{
         width: 350,
         borderRadius: '16px',
-        backgroundColor: '#1b263b',
+        backgroundColor: '#F8F9FA',
         color: '#6bcab5',
         padding: 2,
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',

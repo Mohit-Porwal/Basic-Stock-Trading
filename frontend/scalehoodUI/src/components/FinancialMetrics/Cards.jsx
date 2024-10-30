@@ -30,7 +30,7 @@ import ExpenseCard from './ExpenseCard';
 
 export default function FinancialMetrics({ totalBalance, weeklyIncome, weeklyExpense }) {
   return (
-    <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column', backgroundColor: '#3C3C3E', color: '#6bcab5', padding: 2, borderRadius: '12px' }}>
+    <Box sx={{ display: 'flex', gap: 2, flexDirection: 'column', backgroundColor: 'white', color: '#F8F9FA', padding: 2, borderRadius: '12px' }}>
       <BalanceCard totalBalance={totalBalance} />
       <IncomeCard weeklyIncome={weeklyIncome} />
       <ExpenseCard weeklyExpense={weeklyExpense} />

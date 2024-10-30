@@ -109,7 +109,7 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   };
 
   return (
-    <Card sx={{ width: 275, backgroundColor: '#1b263b' }}>
+    <Card sx={{ width: 275, backgroundColor: '#F8F9FA' }}>
       <CardContent>
         {/* Title */}
         <Typography gutterBottom sx={{ color: '#6bcab5', fontSize: 20, fontWeight: 'bold', textAlign: 'center' }}>

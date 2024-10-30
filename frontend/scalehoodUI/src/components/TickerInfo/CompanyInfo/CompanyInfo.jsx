@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box, Typography, ListItemText } from '@mui/material';
+import { Box, Card, Typography, ListItemText } from '@mui/material';
 
 const CompanyInfo = ({ marketcap, fullTimeEmployees, ceo, headquarters, dividendYield, averageVolume, earningsGrowth, grossMargins }) => {
   return (
-    <Box sx={{ padding: '20px', backgroundColor: '#1b263b', width: '70%', margin: 'auto', borderRadius: '10px', marginBottom: '30px' }}>
+    <Card sx={{ padding: '20px', backgroundColor: '#F8F9FA', width: '70%', margin: 'auto', borderRadius: '10px', marginBottom: '30px' }}>
       {/* First Row */}
       <Box sx={{ display: 'flex', justifyContent: 'space-around', marginBottom: '20px', color: '#6bcab5' }}>
         <ListItemText
@@ -51,7 +51,7 @@ const CompanyInfo = ({ marketcap, fullTimeEmployees, ceo, headquarters, dividend
           sx={{ width: '20%', textAlign: 'center', color: '#6bcab5' }}
         />
       </Box>
-    </Box>
+    </Card>
   );
 };
 

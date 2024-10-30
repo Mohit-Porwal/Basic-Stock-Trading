@@ -1,7 +1,7 @@
 .button-group {
   display: flex;
   justify-content: center;
-  background-color: #3C3C3E; /* Matt black background for the group */
+  background-color: white; /* Matt black background for the group */
   padding: 40px 20px;
   gap:30px;
   margin-top: 10px;

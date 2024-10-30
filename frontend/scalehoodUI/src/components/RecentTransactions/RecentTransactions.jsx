@@ -188,6 +188,9 @@
 //   );
 // }
 
+
+
+
 import * as React from 'react';
 import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider, Box } from '@mui/material';
 
@@ -204,7 +207,7 @@ export default function RecentTransactions({ recentTransactions }) {
       sx={{
         width: 600,
         borderRadius: '16px',
-        backgroundColor: '#1b263b',
+        backgroundColor: '#F8F9FA',
         color: 'white',
         padding: 2,
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
@@ -243,3 +246,5 @@ export default function RecentTransactions({ recentTransactions }) {
     </Card>
   );
 }
+
+
