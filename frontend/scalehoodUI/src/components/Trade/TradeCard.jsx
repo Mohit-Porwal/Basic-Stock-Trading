@@ -187,7 +187,7 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
       
       <CardActions>
         <Button 
-        sx = {{textTransform: 'none', backgroundColor: 'lightgreen', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}
+        sx = {{textTransform: 'none', backgroundColor: '#6bcab5', color: 'black', borderRadius: '15px', '&:hover': {backgroundColor: '#45A049'}, margin: 'auto', fontWeight: 'bold'}}
         onClick={handleTransaction}>{activeView}</Button>
       </CardActions>
 

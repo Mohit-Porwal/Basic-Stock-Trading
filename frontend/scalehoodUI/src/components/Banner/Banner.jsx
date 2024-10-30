@@ -89,7 +89,7 @@ export default function Banner({ sectorWiseTopCompanies }) {
           {sectorWiseTopCompanies[selectedSector].map((company, index) => (
             <React.Fragment key={index}>
               <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
-                <ListItemText primary={company} sx={{ textAlign: 'center' }} />
+                <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{company}</span>} sx={{ textAlign: 'center' }} />
               </ListItem>
               {index < sectorWiseTopCompanies[selectedSector].length - 1 && (
                 <Divider sx={{ backgroundColor: '#fff' }} />
