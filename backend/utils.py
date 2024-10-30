@@ -59,6 +59,7 @@ def get_latest_stocks(sectors):
     stock_price = {}
     for sector in sectors:
         top_companies = (yf.Sector(sector)).top_companies
+        print(len(top_companies))
         ticker_list = top_companies.index.tolist()
     for ticker in ticker_list:   
         ticker_info = (yf.Ticker(ticker)).info

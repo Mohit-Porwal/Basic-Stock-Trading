@@ -1,9 +1,78 @@
+# from flask import Flask, request, jsonify
+# from flask_mysqldb import MySQL
+# from flask_cors import CORS
+# import yfinance as yf
+# from utils import *
+# from decimal import Decimal
+# from time import time
+
+# app = Flask(__name__)
+# CORS(app) 
+# mysql = MySQL(app)
+
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = 'mohit'
+# app.config['MYSQL_DB'] = 'sellscale'
+
+# sectors = ['technology', 'healthcare', 'real-estate']
+# sector_wise_top_companies = {}
+# DEFAULT_PLACEHOLDER = "Data not available"
+
+# @app.route('/',methods=['GET'])
+# def home():
+    
+#     cur = mysql.connection.cursor()
+#     user_id = request.args.get('user_id')
+
+#     #Get total balance of the user's account
+#     cur.execute('SELECT total_balance FROM users WHERE id= %s',(user_id,))
+#     user_details = cur.fetchone()
+#     total_balance = user_details[0]
+
+#     #Get income in the last week
+#     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#     income = cur.fetchone()
+#     weekly_income = income[0]
+    
+#     #Get expense in the last week
+#     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#     expense = cur.fetchone()
+#     weekly_expense = expense[0]
+
+#     #Get Recent transactions.
+#     cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5',(user_id,))
+#     transaction_details = cur.fetchall()
+#     recent_transactions = transaction_details
+    
+#     #Banner information
+#     #In total we will have 4 types of cards here
+#     #Top companies of each of the three sectors (total 3 cards. One card for each sector)
+#     #Latest stocks
+#     sector_wise_top_companies = get_top_companies(sectors)
+#     latest_stocks = get_latest_stocks(sectors)
+
+#     #Payload for home page
+#     response_data = {
+#         "total_balance": total_balance,
+#         "recent_transactions": recent_transactions,
+#         "sector_wise_top_companies": sector_wise_top_companies,
+#         "latest_stocks": latest_stocks,
+#         "weekly_income": weekly_income,
+#         "weekly_expense": weekly_expense,
+#     }
+
+#     cur.close()
+#     return jsonify(response_data)
+
+
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 import yfinance as yf
 from utils import *
 from decimal import Decimal
+from time import time
 
 app = Flask(__name__)
 CORS(app) 
@@ -20,38 +89,47 @@ DEFAULT_PLACEHOLDER = "Data not available"
 
 @app.route('/',methods=['GET'])
 def home():
-    
     cur = mysql.connection.cursor()
     user_id = request.args.get('user_id')
-
-    #Get total balance of the user's account
-    cur.execute('SELECT total_balance FROM users WHERE id= %s',(user_id,))
+    
+    # Get total balance of the user's account
+    start_time = time()
+    cur.execute('SELECT total_balance FROM users WHERE id = %s', (user_id,))
     user_details = cur.fetchone()
     total_balance = user_details[0]
+    print("Total balance query time:", time() - start_time, "seconds")
 
-    #Get income in the last week
+    # Get income in the last week
+    start_time = time()
     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
     income = cur.fetchone()
     weekly_income = income[0]
+    print("Weekly income query time:", time() - start_time, "seconds")
     
-    #Get expense in the last week
+    # Get expense in the last week
+    start_time = time()
     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
     expense = cur.fetchone()
     weekly_expense = expense[0]
+    print("Weekly expense query time:", time() - start_time, "seconds")
 
-    #Get Recent transactions.
-    cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5',(user_id,));
+    # Get recent transactions
+    start_time = time()
+    cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5', (user_id,))
     transaction_details = cur.fetchall()
     recent_transactions = transaction_details
+    print("Recent transactions query time:", time() - start_time, "seconds")
     
-    #Banner information
-    #In total we will have 4 types of cards here
-    #Top companies of each of the three sectors (total 3 cards. One card for each sector)
-    #Latest stocks
+    # Banner information
+    start_time = time()
     sector_wise_top_companies = get_top_companies(sectors)
-    latest_stocks = get_latest_stocks(sectors)
+    print("Sector-wise top companies retrieval time:", time() - start_time, "seconds")
 
-    #Payload for home page
+    start_time = time()
+    latest_stocks = get_latest_stocks(sectors)
+    print("Latest stocks retrieval time:", time() - start_time, "seconds")
+
+    # Payload for home page
     response_data = {
         "total_balance": total_balance,
         "recent_transactions": recent_transactions,
@@ -63,7 +141,183 @@ def home():
 
     cur.close()
     return jsonify(response_data)
+
+
+
+# from flask import Flask, request, jsonify
+# from flask_mysqldb import MySQL
+# from flask_cors import CORS
+# import concurrent.futures
+# import yfinance as yf
+# from utils import *
+# from decimal import Decimal
+
+# app = Flask(__name__)
+# CORS(app) 
+# mysql = MySQL(app)
+
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = 'mohit'
+# app.config['MYSQL_DB'] = 'sellscale'
+
+# sectors = ['technology', 'healthcare', 'real-estate']
+# DEFAULT_PLACEHOLDER = "Data not available"
+
+# def get_total_balance(user_id, cursor):
+#     cursor.execute('SELECT total_balance FROM users WHERE id = %s', (user_id,))
+#     result = cursor.fetchone()
+#     return result[0]
+
+# def get_weekly_income(cursor):
+#     cursor.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#     result = cursor.fetchone()
+#     return result[0]
+
+# def get_weekly_expense(cursor):
+#     cursor.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#     result = cursor.fetchone()
+#     return result[0]
+
+# def get_recent_transactions(user_id, cursor):
+#     cursor.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5', (user_id,))
+#     result = cursor.fetchall()
+#     return result
+
+# @app.route('/', methods=['GET'])
+# def home():
+#     user_id = request.args.get('user_id')
+#     if not user_id:
+#         return jsonify({"error": "user_id is required"}), 400
+
+#     # Establish cursor connection
+#     cur = mysql.connection.cursor()
     
+#     # Execute database queries concurrently
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         total_balance_future = executor.submit(get_total_balance, user_id, cur)
+#         weekly_income_future = executor.submit(get_weekly_income, cur)
+#         weekly_expense_future = executor.submit(get_weekly_expense, cur)
+#         recent_transactions_future = executor.submit(get_recent_transactions, user_id, cur)
+    
+#         # Wait for all futures to complete
+#         total_balance = total_balance_future.result()
+#         weekly_income = weekly_income_future.result()
+#         weekly_expense = weekly_expense_future.result()
+#         recent_transactions = recent_transactions_future.result()
+
+#     # Banner information
+#     sector_wise_top_companies = get_top_companies(sectors)
+#     latest_stocks = get_latest_stocks(sectors)
+
+#     # Payload for home page
+#     response_data = {
+#         "total_balance": total_balance,
+#         "recent_transactions": recent_transactions,
+#         "sector_wise_top_companies": sector_wise_top_companies,
+#         "latest_stocks": latest_stocks,
+#         "weekly_income": weekly_income,
+#         "weekly_expense": weekly_expense,
+#     }
+
+#     cur.close()
+#     return jsonify(response_data)
+
+# from flask import Flask, request, jsonify
+# from flask_mysqldb import MySQL
+# from flask_cors import CORS
+# import concurrent.futures
+# import yfinance as yf
+# from utils import *
+# from decimal import Decimal
+
+# app = Flask(__name__)
+# CORS(app) 
+# mysql = MySQL(app)
+
+# app.config['MYSQL_HOST'] = 'localhost'
+# app.config['MYSQL_USER'] = 'root'
+# app.config['MYSQL_PASSWORD'] = 'mohit'
+# app.config['MYSQL_DB'] = 'sellscale'
+
+# sectors = ['technology', 'healthcare', 'real-estate']
+# DEFAULT_PLACEHOLDER = "Data not available"
+
+# def get_total_balance(user_id):
+#     with app.app_context():
+#         cur = mysql.connection.cursor()
+#         try:
+#             cur.execute('SELECT total_balance FROM users WHERE id = %s', (user_id,))
+#             result = cur.fetchone()
+#             return result[0] if result else 0  # Default to 0 if no result
+#         finally:
+#             cur.close()
+
+# def get_weekly_income():
+#     with app.app_context():
+#         cur = mysql.connection.cursor()
+#         try:
+#             cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#             result = cur.fetchone()
+#             return result[0] if result and result[0] is not None else 0  # Default to 0 if no result or None
+#         finally:
+#             cur.close()
+
+# def get_weekly_expense():
+#     with app.app_context():
+#         cur = mysql.connection.cursor()
+#         try:
+#             cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
+#             result = cur.fetchone()
+#             return result[0] if result and result[0] is not None else 0  # Default to 0 if no result or None
+#         finally:
+#             cur.close()
+
+# def get_recent_transactions(user_id):
+#     with app.app_context():
+#         cur = mysql.connection.cursor()
+#         try:
+#             cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5', (user_id,))
+#             return cur.fetchall()
+#         finally:
+#             cur.close()
+
+# @app.route('/', methods=['GET'])
+# def home():
+#     user_id = request.args.get('user_id')
+#     if not user_id:
+#         return jsonify({"error": "user_id is required"}), 400
+
+#     # Execute database queries concurrently
+#     with concurrent.futures.ThreadPoolExecutor() as executor:
+#         total_balance_future = executor.submit(get_total_balance, user_id)
+#         weekly_income_future = executor.submit(get_weekly_income)
+#         weekly_expense_future = executor.submit(get_weekly_expense)
+#         recent_transactions_future = executor.submit(get_recent_transactions, user_id)
+    
+#         # Wait for all futures to complete
+#         total_balance = total_balance_future.result()
+#         weekly_income = weekly_income_future.result()
+#         weekly_expense = weekly_expense_future.result()
+#         recent_transactions = recent_transactions_future.result()
+
+#     # Banner information
+#     sector_wise_top_companies = get_top_companies(sectors)
+#     latest_stocks = get_latest_stocks(sectors)
+
+#     # Payload for home page
+#     response_data = {
+#         "total_balance": total_balance,
+#         "recent_transactions": recent_transactions,
+#         "sector_wise_top_companies": sector_wise_top_companies,
+#         "latest_stocks": latest_stocks,
+#         "weekly_income": weekly_income,
+#         "weekly_expense": weekly_expense,
+#     }
+
+#     return jsonify(response_data)
+
+
 
 @app.route('/tickerInfo/<ticker>',methods=['GET'])
 def tickerInfo(ticker):
@@ -255,20 +509,19 @@ def portfolio():
     user_id = request.args.get('user_id')
 
     #to get the list of all previously bought stocks
-    cur.execute('SELECT ticker,quantity,average_price FROM portfolio WHERE user_id= %s',(user_id,))
+    cur.execute('SELECT ticker, quantity, average_price FROM portfolio WHERE user_id= %s',(user_id,))
     portfolio = cur.fetchall()
-
+    
     # Return the user's portfolio as JSON
     cur.close()
     return jsonify({"portfolio": portfolio})
 
     #total worth of all the investments
     #Stock ticker symbol
-    #Company name
     #Quantity owned
     #average purchased price
+    #Company name
     #current price
-
 
 if __name__=="__main__":
     app.run(debug=True)
