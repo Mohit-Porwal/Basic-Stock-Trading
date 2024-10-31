@@ -1,73 +1,3 @@
-# from flask import Flask, request, jsonify
-# from flask_mysqldb import MySQL
-# from flask_cors import CORS
-# import yfinance as yf
-# from utils import *
-# from decimal import Decimal
-# from time import time
-
-# app = Flask(__name__)
-# CORS(app) 
-# mysql = MySQL(app)
-
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'mohit'
-# app.config['MYSQL_DB'] = 'sellscale'
-
-# sectors = ['technology', 'healthcare', 'real-estate']
-# sector_wise_top_companies = {}
-# DEFAULT_PLACEHOLDER = "Data not available"
-
-# @app.route('/',methods=['GET'])
-# def home():
-    
-#     cur = mysql.connection.cursor()
-#     user_id = request.args.get('user_id')
-
-#     #Get total balance of the user's account
-#     cur.execute('SELECT total_balance FROM users WHERE id= %s',(user_id,))
-#     user_details = cur.fetchone()
-#     total_balance = user_details[0]
-
-#     #Get income in the last week
-#     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY")
-#     income = cur.fetchone()
-#     weekly_income = income[0]
-    
-#     #Get expense in the last week
-#     cur.execute("SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY")
-#     expense = cur.fetchone()
-#     weekly_expense = expense[0]
-
-#     #Get Recent transactions.
-#     cur.execute('SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5',(user_id,))
-#     transaction_details = cur.fetchall()
-#     recent_transactions = transaction_details
-    
-#     #Banner information
-#     #In total we will have 4 types of cards here
-#     #Top companies of each of the three sectors (total 3 cards. One card for each sector)
-#     #Latest stocks
-#     sector_wise_top_companies = get_top_companies(sectors)
-#     latest_stocks = get_latest_stocks(sectors)
-
-#     #Payload for home page
-#     response_data = {
-#         "total_balance": total_balance,
-#         "recent_transactions": recent_transactions,
-#         "sector_wise_top_companies": sector_wise_top_companies,
-#         "latest_stocks": latest_stocks,
-#         "weekly_income": weekly_income,
-#         "weekly_expense": weekly_expense,
-#     }
-
-#     cur.close()
-#     return jsonify(response_data)
-
-
-
-
 from flask import Flask, request, jsonify
 from flask_mysqldb import MySQL
 from flask_cors import CORS
@@ -117,9 +47,6 @@ def home():
     # Banner information
     sector_wise_top_companies = get_top_companies(sectors)
 
-    # start_time = time()
-    # latest_stocks = get_latest_stocks(sectors)
-
     # Payload for home page
     response_data = {
         "total_balance": total_balance,
@@ -137,17 +64,6 @@ def home():
 def tickerInfo(ticker):
 
     stock = yf.Ticker(ticker)
-
-    #Data for graph
-    # oneDay_history = stock.history(period="1d")
-    # one_week_history = stock.history(period="5d")
-    # one_month_history = stock.history(period="1mo")
-    # three_month_history = stock.history(period="3mo")
-    # one_year_history = stock.history(period="1y")
-    # five_year_history = stock.history(period="5y")
-
-    # graph = {'1d':oneDay_history, '5d': one_week_history, '1mo': one_month_history, '3mo': three_month_history, '1y': one_year_history, '5y': five_year_history}
-
     ticker_info = stock.info
 
     # Data for header
@@ -167,6 +83,7 @@ def tickerInfo(ticker):
     # Data for about section
     summary = ticker_info.get('longBusinessSummary', DEFAULT_PLACEHOLDER)
 
+    # Payload for ticker info page
     return jsonify({
         "current_price": current_price,
         "company_name": company_name,
@@ -181,12 +98,11 @@ def tickerInfo(ticker):
         "summary": summary
     })
 
+# To handle all the user's transactions
 @app.route('/trade', methods=['POST'])
 def trade():
 
-    data = request.json
-    app.logger.info(f"Received data: {data}")  # Log received data
-
+    #Get cursor object for MySQL db
     cur = mysql.connection.cursor()
 
     if request.method == 'POST':
@@ -204,6 +120,7 @@ def trade():
 
         try:
             if transaction_type == 'BUY':
+
                 # Get balance to check for sufficient funds
                 cur.execute('SELECT total_balance FROM users WHERE id = %s', (user_id,))
                 user_details = cur.fetchone()
@@ -237,8 +154,10 @@ def trade():
                     # Record the transaction
                     cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type, transaction_amount))
 
+                    # Commit changes to the DB and close
                     mysql.connection.commit()
                     cur.close()
+
                     return jsonify({"message": "Purchase successful"}), 200
                 else:
                     cur.close()
@@ -269,8 +188,10 @@ def trade():
                         # Record the transaction
                         cur.execute('INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)', (user_id, ticker, quantity, price, transaction_type, transaction_amount))
 
+                        # Commit changes to the DB and close
                         mysql.connection.commit()
                         cur.close()
+
                         return jsonify({"message": "Sale successful"}), 200
                     else:
                         cur.close()
@@ -284,7 +205,6 @@ def trade():
                 return jsonify({"error": "Invalid trade type"}), 400
         
         except Exception as e:
-            # Log the error if necessary (e.g., using logging module)
             cur.close()
             return jsonify({"error": "An error occurred while processing your request."}), 500
 
@@ -292,6 +212,7 @@ def trade():
         cur.close()
         return jsonify({"error": "Invalid request method, only POST is allowed"}), 405
 
+# Function to get average purchase price for stocks owned by the user
 def get_new_average_price(cur, user_id, quantity, price, ticker):
 
     #Get current average price and current shares owned
@@ -313,7 +234,7 @@ def get_new_average_price(cur, user_id, quantity, price, ticker):
 
     return new_average_price
 
-
+# To view user's portfolio
 @app.route('/portfolio',methods=['GET'])
 def portfolio():
 
@@ -324,19 +245,13 @@ def portfolio():
     cur.execute('SELECT ticker, quantity, average_price FROM portfolio WHERE user_id= %s',(user_id,))
     portfolio = cur.fetchall()
 
+    #Format the portfolio data in proper structure for the front end
     formatted_portfolio = [{"ticker": object[0], "quantity": object[1], "average_price": object[2]} for object in portfolio]
     print(formatted_portfolio)
     
-    # Return the user's portfolio as JSON
+    #Return the user's portfolio as JSON
     cur.close()
     return jsonify({"portfolio": formatted_portfolio})
-
-    #total worth of all the investments
-    #Stock ticker symbol
-    #Quantity owned
-    #average purchased price
-    #Company name
-    #current price
 
 if __name__=="__main__":
     app.run(debug=True)
