@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import Graph from '../../components/TickerInfo/Graph/Graph';
 import About from '../../components/TickerInfo/About/About';
 import CompanyInfo from '../../components/TickerInfo/CompanyInfo/CompanyInfo';
 import Header from '../../components/TickerInfo/Header/Header';
@@ -46,7 +45,6 @@ export default function TickerInfoPage(){
                 {tickerData && (
                     <>
                         <Header currentPrice={tickerData.current_price} tickerName={ticker} companyName={tickerData.company_name}/>
-                        <Graph />
                         <About summary={tickerData.summary} />
                         <CompanyInfo 
                             marketcap={tickerData.marketcap} 
@@ -67,7 +65,6 @@ export default function TickerInfoPage(){
                         <ButtonGroup activeView={activeView} setActiveView={setActiveView} buttons={buttonData}/>
                         <TradeCard tickerName={ticker} tickerPrice={tickerData.current_price} activeView={activeView}/>
                     </>
-
                 )}
             </div>
         </div>

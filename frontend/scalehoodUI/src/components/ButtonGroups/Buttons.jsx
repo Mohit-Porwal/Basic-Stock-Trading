@@ -17,25 +17,6 @@ function ButtonGroup({ activeView, setActiveView, buttons }) {
 }
 export default ButtonGroup;
 
-// function ButtonGroup({ activeView, setActiveView }) {
-//     return (
-//         <div className="button-group">
-//             <button 
-//                 className={`button ${activeView === 'Home' ? 'active' : ''}`} 
-//                 onClick={() => setActiveView('Home')}>
-//                 <strong>Home</strong>
-//             </button>
-
-//             <button 
-//                 className={`button ${activeView === 'Portfolio' ? 'active' : ''}`} 
-//                 onClick={() => setActiveView('Portfolio')}>
-//                 <strong>Portfolio</strong>
-//             </button>
-//         </div>
-//     );
-// }
-
-// export default ButtonGroup;
 
 
 

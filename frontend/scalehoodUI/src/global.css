@@ -1,7 +1,5 @@
 body {
     background-color: #3C3C3E;
-    /* background: linear-gradient(90deg, #004e92, #2a73cc); */
-    /* background: 'white'; */
-    margin: 0; /* To remove default margin that browsers apply to body */
+    margin: 0;
     font-family: sans-serif;
 }
