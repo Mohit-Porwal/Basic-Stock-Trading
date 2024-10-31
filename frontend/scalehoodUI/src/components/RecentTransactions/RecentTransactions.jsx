@@ -35,7 +35,7 @@ export default function RecentTransactions({ recentTransactions }) {
             <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Price</span>} sx={{ width: '20%', textAlign: 'center' }} />
             <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Amount</span>} sx={{ width: '20%', textAlign: 'center' }} />
           </ListItem>
-          <Divider sx={{ backgroundColor: 'lightgreen' }} />
+          <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.3}} />
 
           {transactions.map((transaction, index) => (
             <React.Fragment key={index}>
@@ -45,7 +45,7 @@ export default function RecentTransactions({ recentTransactions }) {
                 <ListItemText primary={<span style={{ fontWeight: 'bold' }}>${transaction.price}</span>} sx={{ width: '20%', textAlign: 'center'}} />
                 <ListItemText primary={<span style={{ fontWeight: 'bold' }}>${transaction.totalAmount}</span>} sx={{ width: '20%', textAlign: 'center'}} />
               </ListItem>
-              {index < transactions.length - 1 && <Divider sx={{ backgroundColor: 'lightgreen' }} />}
+              {index < transactions.length - 1 && <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.3 }} />}
             </React.Fragment>
           ))}
         </List>

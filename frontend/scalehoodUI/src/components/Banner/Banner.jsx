@@ -36,7 +36,7 @@ export default function Banner({ sectorWiseTopCompanies }) {
                 <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{company}</span>} sx={{ textAlign: 'center' }} />
               </ListItem>
               {index < sectorWiseTopCompanies[selectedSector].length - 1 && (
-                <Divider sx={{ backgroundColor: '#fff' }} />
+                <Divider sx={{ backgroundColor: '#fff', opacity: 0.3 }} />
               )}
             </React.Fragment>
           ))}
