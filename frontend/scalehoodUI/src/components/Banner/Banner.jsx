@@ -19,9 +19,10 @@ export default function Banner({ sectorWiseTopCompanies }) {
         borderRadius: '16px',
         backgroundColor: '#1b263b',
         color: '#6bcab5',
-        padding: 2,
+        padding: 3,
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
         marginBottom: 3,
+        marginTop: '25px',
       }}
     >
       <CardContent>

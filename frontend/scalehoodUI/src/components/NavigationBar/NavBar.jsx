@@ -74,14 +74,20 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
+  color: '#000', // Sets the input text color to black
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
+    color: '#FF3B30', // Ensures text input is black
     [theme.breakpoints.up('md')]: {
       width: '50ch',
+    },
+    // Red placeholder color
+    '&::placeholder': {
+      color: '#FF3B30', // Sets placeholder color to red
+      opacity: 1, // Ensures full opacity for visibility
     },
   },
 }));

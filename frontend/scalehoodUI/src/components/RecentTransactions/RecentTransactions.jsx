@@ -16,9 +16,10 @@ export default function RecentTransactions({ recentTransactions }) {
         borderRadius: '16px',
         backgroundColor: '#1b263b',
         color: 'white',
-        padding: 2,
+        padding: 1.5,
         boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
         marginBottom: 3,
+        marginLeft: 2
       }}
     >
       <CardContent>
