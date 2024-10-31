@@ -6,8 +6,22 @@ export default function Banner({ sectorWiseTopCompanies }) {
 
   React.useEffect(() => {
     const sectors = Object.keys(sectorWiseTopCompanies);
-    const randomSector = sectors[Math.floor(Math.random() * sectors.length)];
-    setSelectedSector(randomSector);
+    if (sectors.length === 0) return;
+
+    // Function to set a random sector
+    const setRandomSector = () => {
+      const randomSector = sectors[Math.floor(Math.random() * sectors.length)];
+      setSelectedSector(randomSector);
+    };
+
+    // Set an initial random sector
+    setRandomSector();
+
+    // Update the sector every 3 seconds
+    const intervalId = setInterval(setRandomSector, 3000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
   }, [sectorWiseTopCompanies]);
 
   if (!selectedSector) return null;
@@ -46,5 +60,3 @@ export default function Banner({ sectorWiseTopCompanies }) {
     </Card>
   );
 }
-
-
