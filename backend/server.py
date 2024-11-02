@@ -4,21 +4,64 @@ from flask_cors import CORS
 import yfinance as yf
 import pandas as pd
 from decimal import Decimal
-from time import time
+from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 CORS(app)
 mysql = MySQL(app)
 
-app.config["MYSQL_HOST"] = "localhost"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "mohit"
-app.config["MYSQL_DB"] = "sellscale"
+load_dotenv()
+
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
+app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "sellscale")
 
 sectors = ["technology", "healthcare", "real-estate"]
 sector_wise_top_companies = {}
 DEFAULT_PLACEHOLDER = "Data not available"
 
+
+def handle_database_error(e):
+    """Helper function for error handling in database operations."""
+    print(f"Database error: {e}")
+    return jsonify({"error": "An internal server error occurred"}), 500
+
+# Helper function to execute and fetch query results
+def execute_fetchone(query, params=()):
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute(query, params)
+        result = cur.fetchone()
+        return result
+    except Exception as e:
+        return handle_database_error(e)
+    finally:
+        cur.close()
+
+def execute_fetchall(query, params=()):
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute(query, params)
+        results = cur.fetchall()
+        return results
+    except Exception as e:
+        return handle_database_error(e)
+    finally:
+        cur.close()
+
+def execute_commit(query, params=()):
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute(query, params)
+        mysql.connection.commit()
+    except Exception as e:
+        mysql.connection.rollback()
+        return handle_database_error(e)
+    finally:
+        cur.close()
+        
 def get_top_companies(sectors):
     companies = {}
     for sector in sectors:
@@ -30,32 +73,28 @@ def get_top_companies(sectors):
 
 @app.route("/", methods=["GET"])
 def home():
-    cur = mysql.connection.cursor()
+
     user_id = request.args.get("user_id")
 
-    cur.execute("SELECT total_balance FROM users WHERE id = %s", (user_id,))
-    user_details = cur.fetchone()
-    total_balance = user_details[0]
+    # Get total balance
+    user_balance = get_user_balance(user_id)
+    if isinstance(user_balance, tuple):
+        total_balance = user_balance[0]
 
-    cur.execute(
-        "SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY"
+    # Weekly income and expense (further optimization possible)
+    weekly_income = execute_fetchone(
+        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY"
+    )[0]
+    weekly_expense = execute_fetchone(
+        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY"
+    )[0]
+
+    # Recent transactions
+    recent_transactions = execute_fetchall(
+        "SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5", (user_id,)
     )
-    income = cur.fetchone()
-    weekly_income = income[0]
 
-    cur.execute(
-        "SELECT SUM(total_amount) AS total_buy_amount FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY"
-    )
-    expense = cur.fetchone()
-    weekly_expense = expense[0]
-
-    cur.execute(
-        "SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5",
-        (user_id,),
-    )
-    transaction_details = cur.fetchall()
-    recent_transactions = transaction_details
-
+    # Get top companies by sector
     sector_wise_top_companies = get_top_companies(sectors)
 
     response_data = {
@@ -65,8 +104,6 @@ def home():
         "weekly_income": weekly_income,
         "weekly_expense": weekly_expense,
     }
-
-    cur.close()
     return jsonify(response_data)
 
 @app.route("/tickerInfo/<ticker>", methods=["GET"])
@@ -117,34 +154,81 @@ def tickerInfo(ticker):
 
 
 # Helper function to get user balance
-def get_user_balance(cur, user_id):
-    cur.execute("SELECT total_balance FROM users WHERE id = %s", (user_id,))
-    user_details = cur.fetchone()
-    return Decimal(user_details[0]) if user_details else None
+def get_user_balance(user_id):
+    return execute_fetchone("SELECT total_balance FROM users WHERE id = %s", (user_id,))
 
 # Helper function to update user balance
-def update_user_balance(cur, user_id, new_balance):
-    cur.execute("UPDATE users SET total_balance = %s WHERE id = %s", (new_balance, user_id))
+def update_user_balance(user_id, new_balance):
+    return execute_commit("UPDATE users SET total_balance = %s WHERE id = %s", (new_balance, user_id))
 
 # Helper function to get portfolio details for a specific stock
-def get_portfolio_details(cur, user_id, ticker):
-    cur.execute("SELECT quantity, average_price FROM portfolio WHERE user_id = %s AND ticker = %s", (user_id, ticker))
-    return cur.fetchone()
+def get_portfolio_details(user_id, ticker):
+    return execute_fetchone("SELECT quantity, average_price FROM portfolio WHERE user_id = %s AND ticker = %s", (user_id, ticker))
 
 # Helper function to update an existing stock in the portfolio
-def update_portfolio_stock(cur, user_id, ticker, quantity, average_price):
-    cur.execute("UPDATE portfolio SET quantity = %s, average_price = %s WHERE user_id = %s AND ticker = %s",
-                (quantity, average_price, user_id, ticker))
+def update_portfolio_stock(user_id, ticker, quantity, average_price):
+    return execute_commit(
+        "UPDATE portfolio SET quantity = %s, average_price = %s WHERE user_id = %s AND ticker = %s",
+        (quantity, average_price, user_id, ticker),
+    )
 
 # Helper function to insert a new stock into the portfolio
-def insert_portfolio_stock(cur, user_id, ticker, quantity, price):
-    cur.execute("INSERT INTO portfolio (user_id, ticker, quantity, average_price) VALUES (%s, %s, %s, %s)",
-                (user_id, ticker, quantity, price))
+def insert_portfolio_stock(user_id, ticker, quantity, price):
+    return execute_commit(
+        "INSERT INTO portfolio (user_id, ticker, quantity, average_price) VALUES (%s, %s, %s, %s)",
+        (user_id, ticker, quantity, price),
+    )
 
 # Helper function to record a transaction
-def record_transaction(cur, user_id, ticker, quantity, price, transaction_type, total_amount):
-    cur.execute("INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)",
-                (user_id, ticker, quantity, price, transaction_type, total_amount))
+def record_transaction(user_id, ticker, quantity, price, transaction_type, total_amount):
+    return execute_commit(
+        "INSERT INTO transactions (user_id, ticker, quantity, price, trade_type, total_amount) VALUES (%s, %s, %s, %s, %s, %s)",
+        (user_id, ticker, quantity, price, transaction_type, total_amount),
+    )
+
+# Function to get average purchase price for stocks owned by the user
+def get_new_average_price(cur, user_id, quantity, price, ticker):
+    try:
+        # Get current average price and current shares owned
+        cur.execute(
+            "SELECT quantity, average_price FROM portfolio WHERE user_id = %s AND ticker = %s",
+            (user_id, ticker)
+        )
+        operands = cur.fetchone()
+        
+        # Check if the stock is found in the user's portfolio
+        if not operands:
+            raise ValueError("Stock not found in user's portfolio.")
+        
+        # Calculate the total cost before the new transaction
+        total_cost_before = operands[0] * operands[1]
+        
+        # Calculate the additional cost from the new transaction
+        additional_cost = quantity * price
+
+        # Calculate new total cost
+        new_total_cost = total_cost_before + additional_cost
+
+        # Calculate new total shares owned
+        new_total_shares_owned = operands[0] + quantity
+        
+        # Check for division by zero
+        if new_total_shares_owned == 0:
+            raise ZeroDivisionError("Total shares owned cannot be zero.")
+        
+        # Calculate new average price
+        new_average_price = new_total_cost / new_total_shares_owned
+
+        return new_average_price
+
+    except (ValueError, ZeroDivisionError) as e:
+        # Log specific errors like missing stock or division by zero
+        print(f"Error: {e}")
+        return None
+    except Exception as e:
+        # Catch-all for any other exceptions
+        print(f"An unexpected error occurred: {e}")
+        return None
 
 # Function to handle BUY transactions
 def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_amount):
@@ -204,120 +288,48 @@ def handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_a
 # To handle all the user's transactions
 @app.route("/trade", methods=["POST"])
 def trade():
+    transaction_details = request.get_json()
+    user_id = transaction_details.get("user_id")
+    transaction_type = transaction_details.get("transaction_type", "").upper()
+    ticker = transaction_details.get("ticker")
+    quantity = Decimal(transaction_details.get("quantity", 0))
+    transaction_amount = Decimal(transaction_details.get("transaction_amount", 0))
+    price = Decimal(transaction_details.get("price", 0))
+
+    if not all([user_id, transaction_type, ticker, quantity, transaction_amount]):
+        return jsonify({"error": "Missing transaction details"}), 400
+
+    cur = mysql.connection.cursor()
+
     try:
-        cur = mysql.connection.cursor()
-        transaction_details = request.get_json()
-        user_id = transaction_details.get("user_id")
-        transaction_type = transaction_details.get("transaction_type", "").upper()
-        ticker = transaction_details.get("ticker")
-        quantity = Decimal(transaction_details.get("quantity", 0))
-        transaction_amount = Decimal(transaction_details.get("transaction_amount", 0))
-        price = Decimal(transaction_details.get("price", 0))
-
-        # Validate input data
-        if not (user_id and transaction_type and ticker and quantity and transaction_amount):
-            return jsonify({"error": "Missing transaction details"}), 400
-
         if transaction_type == "BUY":
+            # Handle buy logic using helper functions as in previous example
             response, status_code = handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_amount)
         elif transaction_type == "SELL":
+            # Handle sell logic using helper functions as in previous example
             response, status_code = handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_amount)
         else:
-            response, status_code = {"error": "Invalid trade type"}, 400
+            return jsonify({"error": "Invalid trade type"}), 400
 
-        # Commit the transaction and return response
         mysql.connection.commit()
         return jsonify(response), status_code
-
     except Exception as e:
-        print(f"Transaction error: {e}")
         mysql.connection.rollback()
-        return jsonify({"error": "An error occurred while processing the transaction"}), 500
-
+        return handle_database_error(e)
     finally:
         cur.close()
-
-
-# Function to get average purchase price for stocks owned by the user
-def get_new_average_price(cur, user_id, quantity, price, ticker):
-    try:
-        # Get current average price and current shares owned
-        cur.execute(
-            "SELECT quantity, average_price FROM portfolio WHERE user_id = %s AND ticker = %s",
-            (user_id, ticker)
-        )
-        operands = cur.fetchone()
-        
-        # Check if the stock is found in the user's portfolio
-        if not operands:
-            raise ValueError("Stock not found in user's portfolio.")
-        
-        # Calculate the total cost before the new transaction
-        total_cost_before = operands[0] * operands[1]
-        
-        # Calculate the additional cost from the new transaction
-        additional_cost = quantity * price
-
-        # Calculate new total cost
-        new_total_cost = total_cost_before + additional_cost
-
-        # Calculate new total shares owned
-        new_total_shares_owned = operands[0] + quantity
-        
-        # Check for division by zero
-        if new_total_shares_owned == 0:
-            raise ZeroDivisionError("Total shares owned cannot be zero.")
-        
-        # Calculate new average price
-        new_average_price = new_total_cost / new_total_shares_owned
-
-        return new_average_price
-
-    except (ValueError, ZeroDivisionError) as e:
-        # Log specific errors like missing stock or division by zero
-        print(f"Error: {e}")
-        return None
-    except Exception as e:
-        # Catch-all for any other exceptions
-        print(f"An unexpected error occurred: {e}")
-        return None
-
 
 @app.route("/portfolio", methods=["GET"])
 def portfolio():
-    try:
-        cur = mysql.connection.cursor()
-        user_id = request.args.get("user_id")
+    user_id = request.args.get("user_id")
 
-        # Check if user_id is provided
-        if not user_id:
-            return jsonify({"error": "user_id is required"}), 400
+    if not user_id:
+        return jsonify({"error": "user_id is required"}), 400
 
-        # Get the list of all previously bought stocks
-        cur.execute(
-            "SELECT ticker, quantity, average_price FROM portfolio WHERE user_id = %s",
-            (user_id,)
-        )
-        portfolio = cur.fetchall()
+    portfolio = execute_fetchall("SELECT ticker, quantity, average_price FROM portfolio WHERE user_id = %s", (user_id,))
+    formatted_portfolio = [{"ticker": record[0], "quantity": record[1], "average_price": record[2]} for record in portfolio]
 
-        # Format the portfolio data in proper structure for the front end
-        formatted_portfolio = [
-            {"ticker": record[0], "quantity": record[1], "average_price": record[2]}
-            for record in portfolio
-        ]
-
-        # Return the user's portfolio as JSON
-        return jsonify({"portfolio": formatted_portfolio})
-
-    except Exception as e:
-        # Log the error and return a JSON response
-        print(f"An error occurred: {e}")
-        return jsonify({"error": "An error occurred while fetching the portfolio."}), 500
-
-    finally:
-        # Ensure the cursor is closed
-        cur.close()
-
+    return jsonify({"portfolio": formatted_portfolio})
 
 if __name__ == "__main__":
     app.run(debug=True)
