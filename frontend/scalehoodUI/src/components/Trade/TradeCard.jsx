@@ -21,8 +21,6 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   //const [method, setMethod] = useState('Dollars'); // Default to Dollars
   const [amount, setAmount] = useState(''); // To store the amount or shares value
 
-  const [dollars, setDollars] = useState(true);
-  const [shares, setShares] = useState(false);
   const [purchaseType, setpurchaseType] = useState('Dollars');
 
   // Dialog state
@@ -32,13 +30,9 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
   const handleMethodChange = (event) => {
 
     if(event.target.value==='Dollars'){
-      setDollars(true);
-      setShares(false);
       setpurchaseType('Dollars');
     }
     else{
-      setShares(true);
-      setDollars(false);
       setpurchaseType('Shares');
     }
   };
@@ -178,11 +172,11 @@ export default function TradeCard({ tickerName, tickerPrice, activeView }) {
         </Box>
       </CardContent>
 
-      {amount && (
+      {amount ? (
         <Box sx={{ padding: '10px', textAlign: 'center', fontWeight: 'bold', color: '#6bcab5' }}>
           {getEstimate()}
         </Box>
-      )}
+      ) : null}
       
       <CardActions>
         <Button 

@@ -42,7 +42,7 @@ export default function TickerInfoPage(){
 
             <div style={{width: '60%', boxSizing: 'border-box'}}>
                 {/* Conditionally render each component based on tickerData availability */}
-                {tickerData && (
+                {tickerData ? (
                     <>
                         <Header currentPrice={tickerData.current_price} tickerName={ticker} companyName={tickerData.company_name}/>
                         <About summary={tickerData.summary} />
@@ -57,15 +57,15 @@ export default function TickerInfoPage(){
                             grossMargins={tickerData.gross_margins}
                         />
                     </>
-                )}
+                ) : null}
             </div>
             <div style={{marginTop : '20px'}}>
-                {tickerData && (
+                {tickerData ? (
                     <>
                         <ButtonGroup activeView={activeView} setActiveView={setActiveView} buttons={buttonData}/>
                         <TradeCard tickerName={ticker} tickerPrice={tickerData.current_price} activeView={activeView}/>
                     </>
-                )}
+                ) : null}
             </div>
         </div>
     )

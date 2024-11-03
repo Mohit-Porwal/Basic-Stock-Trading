@@ -1,10 +1,11 @@
 import React from 'react';
+import { useEffect } from 'react';
 import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
 
 export default function Banner({ sectorWiseTopCompanies }) {
   const [selectedSector, setSelectedSector] = React.useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const sectors = Object.keys(sectorWiseTopCompanies);
     if (sectors.length === 0) return;
 
