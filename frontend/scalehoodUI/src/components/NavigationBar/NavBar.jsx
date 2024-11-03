@@ -16,7 +16,7 @@ const NavBar = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ background: '#3C3C3E', padding: '10px 0' }}>
+    <AppBar position="static" sx={{ background: 'black', padding: '10px 0' }}>
       <Toolbar sx={{ maxWidth: '1000px', width: '100%', mx: 'auto' }}>
         
         {/* Logo and App Name */}
@@ -41,7 +41,7 @@ const NavBar = () => {
         
         {/* User Greeting */}
         <Box sx={{ ml: 'auto' }}>
-          <Typography variant="h6" sx={{ color: '#FF3B30', fontWeight: 700 }}>Hi Mohit!</Typography>
+          <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>Hi Mohit!</Typography>
         </Box>
       </Toolbar>
     </AppBar>
@@ -86,7 +86,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
     // Red placeholder color
     '&::placeholder': {
-      color: '#FF3B30', // Sets placeholder color to red
+      color: 'white', // Sets placeholder color to red
       opacity: 1, // Ensures full opacity for visibility
     },
   },

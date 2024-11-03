@@ -52,27 +52,25 @@ export default function HomePage() {
                 <div style = {{display: 'flex', gap: '10px'}}>
                     <div style = {{display: 'flex', gap: '20px', marginTop: '10px', flexDirection: 'column'}}>
                         {/* Conditionally render components based on the active button */}
-                        {activeView === 'Home' && (
+                        {activeView === 'Home' ? (
                             <>
                                 <FinancialMetrics 
                                 totalBalance = {data.total_balance}
                                 weeklyIncome = {data.weekly_income}
                                 weeklyExpense = {data.weekly_expense}/>
-                                {data.recent_transactions && Array.isArray(data.recent_transactions) && (
+                                {data.recent_transactions && Array.isArray(data.recent_transactions) ? (
                                     <RecentTransactions
                                         recentTransactions={data.recent_transactions}
                                     />
-                                )}
+                                ) : null}
                             </>
-                        )}
+                        ) : null}
                     </div>
                     {/* Render Banner only when sector_wise_top_companies is available */}
-                    {activeView === 'Home' && data.sector_wise_top_companies && (
+                    {activeView === 'Home' && data.sector_wise_top_companies ? (
                         <Banner sectorWiseTopCompanies={data.sector_wise_top_companies} latestStocks={data.latest_stocks}/>
-                    )}
-                    {activeView === 'Portfolio' && (
-                        <Portfolio/>
-                    )}
+                    ) : null}
+                    {activeView === 'Portfolio' ? <Portfolio /> : null}
                 </div>
             </div>
         </div>

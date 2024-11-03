@@ -1,16 +1,14 @@
 import * as React from 'react';
 import { Box } from '@mui/material';
-import BalanceCard from './BalanceCard';
-import IncomeCard from './IncomeCard';
-import ExpenseCard from './ExpenseCard';
+import MetricCard from './MetricCard';
 
 export default function FinancialMetrics({ totalBalance, weeklyIncome, weeklyExpense }) {
   return (
-    <Box sx={{ display: 'flex', gap: 2, backgroundColor: '#3C3C3E', color: '#6bcab5', padding: 2, borderRadius: '12px' }}>
-      <BalanceCard totalBalance={totalBalance} />
-      <IncomeCard weeklyIncome={weeklyIncome} />
-      <ExpenseCard weeklyExpense={weeklyExpense} />
-    </Box>
+    <Box sx={{ display: 'flex', gap: 2, backgroundColor: 'black', padding: 2, borderRadius: '12px' }}>
+      <MetricCard title="Total Balance" amount={totalBalance} />
+      <MetricCard title="Weekly Income" amount={weeklyIncome} />
+      <MetricCard title="Weekly Expense" amount={weeklyExpense} />
+    </Box> 
   );
 }
 

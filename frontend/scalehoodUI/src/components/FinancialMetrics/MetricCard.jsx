@@ -3,7 +3,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 
-export default function BalanceCard({ totalBalance }) {
+export default function MetricCard({ title, amount }) {
 
   return (
     <Card
@@ -24,10 +24,10 @@ export default function BalanceCard({ totalBalance }) {
     >
       <CardContent sx={{ textAlign: 'center' }}>
         <Typography gutterBottom sx={{ color: '#6bcab5', fontSize: 14 }}>
-          Your Balance
+          {title}
         </Typography>
         <Typography variant="h4" component="div" sx={{ fontWeight: 'bold', color: '#6bcab5' }}>
-          ${totalBalance}
+          ${amount}
         </Typography>
       </CardContent>
     </Card>
