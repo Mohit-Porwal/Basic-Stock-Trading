@@ -6,12 +6,16 @@ import pandas as pd
 from decimal import Decimal
 from dotenv import load_dotenv
 import os
+import logging
 
 app = Flask(__name__)
 CORS(app)
 mysql = MySQL(app)
 
 load_dotenv()
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
@@ -24,7 +28,7 @@ DEFAULT_PLACEHOLDER = "Data not available"
 
 def handle_database_error(e):
     """Helper function for error handling in database operations."""
-    print(f"Database error: {e}")
+    logger.error(f"Database error: {e}")
     return jsonify({"error": "An internal server error occurred"}), 500
 
 def execute_fetchone(query, params=()):
@@ -64,10 +68,14 @@ def execute_commit(query, params=()):
 def get_top_companies(sectors):
     companies = {}
     for sector in sectors:
-        top_companies = (yf.Sector(sector)).top_companies
-        df = pd.DataFrame(top_companies)
-        top_companies_list = df["name"].tolist()
-        companies[sector] = top_companies_list[:10]
+        try:
+            top_companies = (yf.Sector(sector)).top_companies
+            df = pd.DataFrame(top_companies)
+            top_companies_list = df["name"].tolist()
+            companies[sector] = top_companies_list[:10]
+        except Exception as e:
+            logger.error(f"Error fetching top companies for sector {sector}: {e}")
+            companies[sector] = [DEFAULT_PLACEHOLDER]
     return companies
 
 @app.route("/", methods=["GET"])
@@ -79,6 +87,9 @@ def home():
     user_balance = get_user_balance(user_id)
     if isinstance(user_balance, tuple):
         total_balance = user_balance[0]
+    else:
+        logger.error(f"User balance retrieval failed for user_id: {user_id}")
+        return jsonify({"error": "User not found"}), 404
 
     weekly_income = execute_fetchone(
         "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY"
@@ -106,49 +117,50 @@ def home():
 
 @app.route("/tickerInfo/<ticker>", methods=["GET"])
 def tickerInfo(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        ticker_info = stock.info
 
-    stock = yf.Ticker(ticker)
-    ticker_info = stock.info
+        # Data for header
+        current_price = ticker_info.get("currentPrice", DEFAULT_PLACEHOLDER)
+        company_name = ticker_info.get("longName", " ")
 
-    # Data for header
-    current_price = ticker_info.get("currentPrice", DEFAULT_PLACEHOLDER)
-    company_name = ticker_info.get("longName", " ")
+        # Data for company info
+        marketcap = ticker_info.get("marketCap", DEFAULT_PLACEHOLDER)
+        fulltime_employees = ticker_info.get("fullTimeEmployees", DEFAULT_PLACEHOLDER)
+        ceo = ticker_info.get("companyOfficers", [{}])[0].get("name", DEFAULT_PLACEHOLDER)
+        headquarters = (
+            ticker_info.get("city", "")
+            + ", "
+            + ticker_info.get("state", DEFAULT_PLACEHOLDER)
+        )
+        dividend_yield = ticker_info.get("dividendYield", DEFAULT_PLACEHOLDER)
+        avg_volume = ticker_info.get("averageVolume", DEFAULT_PLACEHOLDER)
+        earnings_growth = ticker_info.get("earningsGrowth", DEFAULT_PLACEHOLDER)
+        gross_margins = ticker_info.get("grossMargins", DEFAULT_PLACEHOLDER)
 
-    # Data for company info
-    marketcap = ticker_info.get("marketCap", DEFAULT_PLACEHOLDER)
-    fulltime_employees = ticker_info.get("fullTimeEmployees", DEFAULT_PLACEHOLDER)
-    ceo = ticker_info.get("companyOfficers", [{}])[0].get(
-        "name", DEFAULT_PLACEHOLDER
-    )  # Using [{}] to prevent IndexError
-    headquarters = (
-        ticker_info.get("city", "")
-        + ", "
-        + ticker_info.get("state", DEFAULT_PLACEHOLDER)
-    )
-    dividend_yield = ticker_info.get("dividendYield", DEFAULT_PLACEHOLDER)
-    avg_volume = ticker_info.get("averageVolume", DEFAULT_PLACEHOLDER)
-    earnings_growth = ticker_info.get("earningsGrowth", DEFAULT_PLACEHOLDER)
-    gross_margins = ticker_info.get("grossMargins", DEFAULT_PLACEHOLDER)
+        # Data for about section
+        summary = ticker_info.get("longBusinessSummary", DEFAULT_PLACEHOLDER)
 
-    # Data for about section
-    summary = ticker_info.get("longBusinessSummary", DEFAULT_PLACEHOLDER)
-
-    # Payload for ticker info page
-    return jsonify(
-        {
-            "current_price": current_price,
-            "company_name": company_name,
-            "marketcap": marketcap,
-            "fulltime_employees": fulltime_employees,
-            "ceo": ceo,
-            "headquarters": headquarters,
-            "dividend_yield": dividend_yield,
-            "avg_volume": avg_volume,
-            "earnings_growth": earnings_growth,
-            "gross_margins": gross_margins,
-            "summary": summary,
-        }
-    )
+        # Payload for ticker info page
+        return jsonify(
+            {
+                "current_price": current_price,
+                "company_name": company_name,
+                "marketcap": marketcap,
+                "fulltime_employees": fulltime_employees,
+                "ceo": ceo,
+                "headquarters": headquarters,
+                "dividend_yield": dividend_yield,
+                "avg_volume": avg_volume,
+                "earnings_growth": earnings_growth,
+                "gross_margins": gross_margins,
+                "summary": summary,
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error retrieving info for ticker {ticker}: {e}")
+        return jsonify({"error": "An error occurred while fetching ticker info"}), 500
 
 def get_user_balance(user_id):
     """Helper function to get user balance"""
@@ -226,12 +238,10 @@ def get_new_average_price(cur, user_id, quantity, price, ticker):
         return new_average_price
 
     except (ValueError, ZeroDivisionError) as e:
-        # Log specific errors like missing stock or division by zero
-        print(f"Error: {e}")
+        logger.warning(f"Error in average price calculation: {e}")
         return None
     except Exception as e:
-        # Catch-all for any other exceptions
-        print(f"An unexpected error occurred: {e}")
+        logger.error(f"Unexpected error while calculating average price: {e}")
         return None
 
 
@@ -269,8 +279,7 @@ def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_am
         return {"message": "Purchase successful"}, 200
 
     except ValueError as ve:
-        # Catch specific value errors (e.g., calculating new average price)
-        print(f"ValueError: {ve}")
+        logger.error(f"Error occurred while buying stock: {e}")
         cur.connection.rollback()
         return {"error": str(ve)}, 500
 
@@ -319,9 +328,7 @@ def handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_a
         return {"message": "Sale successful"}, 200
 
     except Exception as e:
-        # Log the error for debugging purposes
-        print(f"Error processing sell transaction for user_id {user_id}, ticker {ticker}: {e}")
-        # Rollback any partial changes made to the database
+        logger.error(f"Error occurred while selling stock: {e}")
         cur.connection.rollback()
         return {"error": "An error occurred while processing the sell transaction"}, 500
 
@@ -370,6 +377,7 @@ def portfolio():
     user_id = request.args.get("user_id")
 
     if not user_id:
+        logger.warning("user_id is required for fetching portfolio.")
         return jsonify({"error": "user_id is required"}), 400
 
     try:
@@ -381,6 +389,7 @@ def portfolio():
         
         # Check if portfolio data was retrieved successfully
         if portfolio is None:
+            logger.error(f"Failed to retrieve portfolio data for user_id {user_id}")
             return jsonify({"error": "Failed to retrieve portfolio data"}), 500
 
         # Format the portfolio data for frontend use
@@ -389,11 +398,11 @@ def portfolio():
             for record in portfolio
         ]
 
+        logger.info(f"Successfully retrieved portfolio for user_id {user_id}")
         return jsonify({"portfolio": formatted_portfolio}), 200
 
     except Exception as e:
-        # Log the error for debugging and return an error response
-        print(f"Error retrieving portfolio for user_id {user_id}: {e}")
+        logger.error(f"Error retrieving portfolio for user_id {user_id}: {e}")
         return jsonify({"error": "An error occurred while fetching the portfolio"}), 500
 
 if __name__ == "__main__":
