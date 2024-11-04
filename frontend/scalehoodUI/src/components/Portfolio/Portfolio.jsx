@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, List, ListItem, ListItemText, Typography, Divider } from '@mui/material';
 
-const Portfolio = () => {
+export default function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
 
   useEffect(() => {
@@ -12,7 +12,7 @@ const Portfolio = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        console.log("Portfolio " + data.portfolio);
+        console.log("Portfolio ", data.portfolio);
         setPortfolio(data.portfolio);
       } catch (error) {
         console.error('Error fetching portfolio:', error);
@@ -20,6 +20,17 @@ const Portfolio = () => {
     };
     fetchPortfolio();
   }, []);
+
+  const renderListItem = (label, isHeader) => (
+    <ListItemText 
+      primary={<span style={{ fontWeight: 'bold' }}>{label}</span>} 
+      sx={{ 
+        color: isHeader ? 'inherit' : '#6bcab5', 
+        width: '20%', 
+        textAlign: 'center' 
+      }} 
+    />
+  );
 
   return (
     <Box sx={{
@@ -56,9 +67,9 @@ const Portfolio = () => {
         }}>
           <List sx={{ padding: 0 }}>
             <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
-              <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Ticker</span>} sx={{ width: '20%', textAlign: 'center' }} />
-              <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Quantity</span>} sx={{ width: '20%', textAlign: 'center' }} />
-              <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Average Price</span>} sx={{ width: '20%', textAlign: 'center' }} />
+              {renderListItem("Ticker", true)}
+              {renderListItem("Quantity", true)}
+              {renderListItem("Average Price", true)}
             </ListItem>
             {portfolio.map((stock, index) => (
               <React.Fragment key={index}>
@@ -66,9 +77,9 @@ const Portfolio = () => {
                   paddingLeft: 0,
                   paddingRight: 0,
                 }}>
-                  <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{stock.ticker}</span>} sx={{ color: '#6bcab5', width: '20%', textAlign: 'center' }} />
-                  <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{`${stock.quantity}`}</span>} sx={{ color: '#6bcab5', width: '20%', textAlign: 'center' }} />
-                  <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{`$${stock.average_price}`}</span>} sx={{ color: '#6bcab5', width: '20%', textAlign: 'center' }} />
+                  {renderListItem(stock.ticker, false)}
+                  {renderListItem(stock.quantity, false)}
+                  {renderListItem(`$${stock.average_price}`, false)}
                 </ListItem>
                 <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.2 }} />
               </React.Fragment>
@@ -79,6 +90,3 @@ const Portfolio = () => {
     </Box>
   );
 };
-
-export default Portfolio;
-

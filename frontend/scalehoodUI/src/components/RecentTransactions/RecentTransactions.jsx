@@ -2,12 +2,21 @@ import * as React from 'react';
 import { Card, CardContent, Typography, List, ListItem, ListItemText, Divider, Box } from '@mui/material';
 
 export default function RecentTransactions({ recentTransactions }) {
+  // Extract transactions data for easier mapping
   const transactions = recentTransactions.map(transaction => ({
     name: transaction[2],      // Stock symbol
     type: transaction[3],      // Transaction type
     price: transaction[5],     // Price
     totalAmount: transaction[6] // Total Amount
   }));
+
+  // Reusable function to render list items
+  const renderListItem = (label, value) => (
+    <ListItemText
+      primary={<span style={{ fontWeight: 'bold' }}>{label}</span>}
+      sx={{ width: '20%', textAlign: 'center', color: '#6bcab5', fontWeight: 'bold' }}
+    />
+  );
 
   return (
     <Card
@@ -30,21 +39,23 @@ export default function RecentTransactions({ recentTransactions }) {
         </Box>
 
         <List>
-          <ListItem sx={{ paddingLeft: 0, paddingRight: 0, fontWeight: 700, color: '#6bcab5'}}>
-            <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Ticker</span>} sx={{ width: '20%', textAlign: 'center' }} />
-            <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Transaction</span>} sx={{ width: '20%', textAlign: 'center' }} />
-            <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Price</span>} sx={{ width: '20%', textAlign: 'center' }} />
-            <ListItemText primary={<span style={{ fontWeight: 'bold' }}>Amount</span>} sx={{ width: '20%', textAlign: 'center' }} />
+          {/* Header Row */}
+          <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
+            {renderListItem("Ticker")}
+            {renderListItem("Transaction")}
+            {renderListItem("Price")}
+            {renderListItem("Amount")}
           </ListItem>
-          <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.3}} />
+          <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.3 }} />
 
+          {/* Transaction Rows */}
           {transactions.map((transaction, index) => (
             <React.Fragment key={index}>
-              <ListItem sx={{ paddingLeft: 0, paddingRight: 0, color: '#6bcab5',fontWeight: 'bold' }}>
-                <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{transaction.name}</span>} sx={{ width: '20%', textAlign: 'center' }} />
-                <ListItemText primary={<span style={{ fontWeight: 'bold' }}>{transaction.type}</span>} sx={{ width: '20%', textAlign: 'center' }} />
-                <ListItemText primary={<span style={{ fontWeight: 'bold' }}>${transaction.price}</span>} sx={{ width: '20%', textAlign: 'center'}} />
-                <ListItemText primary={<span style={{ fontWeight: 'bold' }}>${transaction.totalAmount}</span>} sx={{ width: '20%', textAlign: 'center'}} />
+              <ListItem sx={{ paddingLeft: 0, paddingRight: 0 }}>
+                {renderListItem(transaction.name)}
+                {renderListItem(transaction.type)}
+                {renderListItem(`$${transaction.price}`)}
+                {renderListItem(`$${transaction.totalAmount}`)}
               </ListItem>
               {index < transactions.length - 1 && <Divider sx={{ backgroundColor: 'lightgreen', opacity: 0.3 }} />}
             </React.Fragment>
