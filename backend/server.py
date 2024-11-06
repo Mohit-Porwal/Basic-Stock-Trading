@@ -17,10 +17,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST", "localhost")
-app.config["MYSQL_USER"] = os.getenv("MYSQL_USER", "root")
+app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
+app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
 app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
-app.config["MYSQL_DB"] = os.getenv("MYSQL_DB", "sellscale")
+app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 
 sectors = ["technology", "healthcare", "real-estate"]
 sector_wise_top_companies = {}
@@ -249,9 +249,11 @@ def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_am
     """Function to handle BUY transactions with error handling and exception handling."""
     try:
         # Check if the user balance exists
-        current_balance = get_user_balance(cur, user_id)
+        current_balance = get_user_balance(user_id)
         if current_balance is None:
             return {"error": "User not found"}, 404
+        else:
+            current_balance = current_balance[0]
 
         # Check if user has enough funds
         if transaction_amount > current_balance:
@@ -259,23 +261,23 @@ def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_am
 
         # Update user's balance
         new_balance = current_balance - transaction_amount
-        update_user_balance(cur, user_id, new_balance)
+        update_user_balance(user_id, new_balance)
 
         # Check and update the portfolio
-        portfolio_details = get_portfolio_details(cur, user_id, ticker)
+        portfolio_details = get_portfolio_details(user_id, ticker)
         if portfolio_details:
             # Update existing stock
             new_quantity = portfolio_details[0] + quantity
             new_average_price = get_new_average_price(cur, user_id, quantity, price, ticker)
             if new_average_price is None:
                 raise ValueError("Error calculating new average price.")
-            update_portfolio_stock(cur, user_id, ticker, new_quantity, new_average_price)
+            update_portfolio_stock(user_id, ticker, new_quantity, new_average_price)
         else:
             # Insert new stock
-            insert_portfolio_stock(cur, user_id, ticker, quantity, price)
+            insert_portfolio_stock(user_id, ticker, quantity, price)
 
         # Record transaction
-        record_transaction(cur, user_id, ticker, quantity, price, "BUY", transaction_amount)
+        record_transaction(user_id, ticker, quantity, price, "BUY", transaction_amount)
         return {"message": "Purchase successful"}, 200
 
     except ValueError as ve:
@@ -285,7 +287,7 @@ def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_am
 
     except Exception as e:
         # Log and handle unexpected errors
-        print(f"Error processing buy transaction for user_id {user_id}, ticker {ticker}: {e}")
+        logger.error(f"Error processing buy transaction for user_id {user_id}, ticker {ticker}: {e}")
         cur.connection.rollback()
         return {"error": "An error occurred while processing the buy transaction"}, 500
 
@@ -293,21 +295,23 @@ def handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_a
     """Function to handle SELL transactions with error handling and exception handling."""
     try:
         # Check if the user has enough stocks to sell
-        portfolio_details = get_portfolio_details(cur, user_id, ticker)
+        portfolio_details = get_portfolio_details(user_id, ticker)
         if not portfolio_details or portfolio_details[0] < quantity:
             return {"error": "Insufficient stocks to sell"}, 400
 
         # Check if the user balance exists
-        current_balance = get_user_balance(cur, user_id)
+        current_balance = get_user_balance(user_id)
         if current_balance is None:
             return {"error": "User not found"}, 404
+        else:
+            current_balance = current_balance[0]
 
         # Calculate new quantity and balance
         new_quantity = portfolio_details[0] - quantity
         new_balance = current_balance + transaction_amount
 
         # Update user's balance
-        update_user_balance(cur, user_id, new_balance)
+        update_user_balance(user_id, new_balance)
 
         # Update or remove stock from portfolio
         if new_quantity == 0:
@@ -323,7 +327,7 @@ def handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_a
 
         # Record the transaction in the transactions table
         record_transaction(
-            cur, user_id, ticker, quantity, price, "SELL", transaction_amount
+            user_id, ticker, quantity, price, "SELL", transaction_amount
         )
         return {"message": "Sale successful"}, 200
 
@@ -406,4 +410,4 @@ def portfolio():
         return jsonify({"error": "An error occurred while fetching the portfolio"}), 500
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
