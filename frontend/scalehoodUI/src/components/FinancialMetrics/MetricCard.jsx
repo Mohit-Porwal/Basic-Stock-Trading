@@ -10,7 +10,6 @@ export default function MetricCard({ title, amount }) {
       sx={{
         width: 180,
         height: 180,
-        // backgroundColor: '#EAF6FF',
         backgroundColor: '#1b263b',
         borderRadius: '50%',
         display: 'flex',
@@ -18,7 +17,6 @@ export default function MetricCard({ title, amount }) {
         alignItems: 'center',
         justifyContent: 'center',
         boxShadow: '0 10px 16px rgba(31, 38, 135, 0.3)',
-        // border: '10px solid #007BFF',
         border: '10px solid #1b263b'
       }}
     >

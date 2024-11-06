@@ -6,7 +6,6 @@ export default function About({summary}){
 
   const aboutText = summary;
 
-  // Function to toggle the "Read More" and "Read Less" state
   const toggleReadMore = () => {
     setIsExpanded(!isExpanded);
   };

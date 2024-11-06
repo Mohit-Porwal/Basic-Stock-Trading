@@ -12,7 +12,6 @@ export default function Portfolio() {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        console.log("Portfolio ", data.portfolio);
         setPortfolio(data.portfolio);
       } catch (error) {
         console.error('Error fetching portfolio:', error);

@@ -21,14 +21,11 @@ export default function TickerInfoPage(){
         {name:'Sell',value:'Sell'},
     ]
     
-    //Fetch ticker info data from the DB when component mounts
     useEffect( () => {
         const fetchTickerInfo = async () => {
-            console.log("Fetch ticker info has been called");
             try{
                 const response = await fetch(`http://127.0.0.1:5000/tickerInfo/${ticker}`);
                 const data = await response.json();
-                //console.log("Data "+ JSON.stringify(data));
                 setTickerData(data);
             }catch(error){
                 console.error("Error fetching data", error);

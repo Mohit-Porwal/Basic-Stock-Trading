@@ -11,8 +11,8 @@
   padding: 10px 20px;
   border-radius: 20px;
   border: none;
-  background-color:lightgray;/* Default button background */
-  color: black; /* Text color */
+  background-color:lightgray;
+  color: black;
   font-size: 16px;
   cursor: pointer;
   margin-right: 10px;
@@ -24,10 +24,10 @@
 }
 
 .button:hover {
-  background-color: #6bcab5; /* Hover effect */
+  background-color: #6bcab5;
 }
 
 .active {
-  background-color: #6bcab5; /* Active button background, greenish */
+  background-color: #6bcab5;
   color: black;
 }

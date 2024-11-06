@@ -2,14 +2,14 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 import NavBar from '../../components/NavigationBar/NavBar';
 import ButtonGroup from '../../components/ButtonGroups/Buttons';
-import FinancialMetrics from '../../components/FinancialMetrics/Cards';
+import FinancialMetrics from '../../components/FinancialMetrics/FinancialMetrics';
 import RecentTransactions from '../../components/RecentTransactions/RecentTransactions';
 import Portfolio from '../../components/Portfolio/Portfolio';
 import '../../global.css'
 import Banner from '../../components/Banner/Banner';
 
 export default function HomePage() {
-    const [activeView, setActiveView] = useState('Home'); // Default to 'Home' view
+    const [activeView, setActiveView] = useState('Home');
 
     const buttonData = [
         { name: 'Home', value: 'Home' },
@@ -18,19 +18,11 @@ export default function HomePage() {
 
     const [data, setData] = useState({});
 
-    // Fetch user data when the component mounts
     useEffect(() => {
         const fetchData = async () => {
-            console.log("FETCH DATA HAS BEEN CALLED");
             try {
                 const response = await fetch('http://127.0.0.1:5000?user_id=1'); 
-
-                console.log("RESPONSE "+ response);
-
                 const result = await response.json();
-
-                console.log("THIS IS THE RESULT "+ JSON.stringify(result));
-
                 setData(result);
             } catch (error) {
                 console.error("Error fetching user data:", error);

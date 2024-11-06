@@ -14,14 +14,11 @@ export default function Banner({ sectorWiseTopCompanies }) {
       const randomSector = sectors[Math.floor(Math.random() * sectors.length)];
       setSelectedSector(randomSector);
     };
-
-    // Set an initial random sector
     setRandomSector();
 
     // Update the sector every 3 seconds
     const intervalId = setInterval(setRandomSector, 3000);
 
-    // Clear interval on component unmount
     return () => clearInterval(intervalId);
   }, [sectorWiseTopCompanies]);
 

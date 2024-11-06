@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppBar, Toolbar, InputBase, Typography, IconButton, Box, Avatar } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
-import logo from './hood.png'; // Update the path to your logo image
+import logo from './hood.png';
 
 const NavBar = () => {
   const [ticker, setTicker] = useState('');
@@ -80,14 +80,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    color: '#FF3B30', // Ensures text input is black
+    color: '#FF3B30',
     [theme.breakpoints.up('md')]: {
       width: '50ch',
     },
     // Red placeholder color
     '&::placeholder': {
-      color: 'white', // Sets placeholder color to red
-      opacity: 1, // Ensures full opacity for visibility
+      color: 'white', 
+      opacity: 1,
     },
   },
 }));

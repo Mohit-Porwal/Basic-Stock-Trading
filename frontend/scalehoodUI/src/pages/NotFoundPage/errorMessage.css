@@ -1,7 +1,7 @@
 .errorMessage {
-    font-size: 30px; /* Adjust the size to your preference */
-    text-align: left; /* Optional: center the text */
-    color: white; /* Optional: adjust the color */
+    font-size: 30px;
+    text-align: left; 
+    color: white;
     margin-bottom: 30px;
     margin-top: 30px;
 }
