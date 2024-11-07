@@ -26,7 +26,19 @@ Open the command prompt and inside your project folder (root), type the below co
 git clone https://github.com/Mohit-Porwal/Basic-Stock-Trading.git
 cd basic-stock-trading
 cd backend
-python -m venv venv
-.\venv\Scripts\activate
+python -m venv venv (Skip in case you don't want to create a virtual environment)
+.\venv\Scripts\activate (Skip in case you don't want to create a virtual environment)
 pip install -r requirements.txt
+py server.py (This will start the backend server)
 ```
+
+Go back to the project's root folder, and type the below commands to setup the frontend
+
+```bash
+cd basic-stock-trading
+cd frontend\scalehoodUI
+npm install
+npm run dev (This will start the development environment for the frontend)
+```
+
+Open http://localhost:5173/ in your browser to see the application.
