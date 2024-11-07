@@ -95,6 +95,15 @@ Open http://localhost:5173/ in your browser to see the application.
 
 Start your docker desktop application which will start the docker engine.
 
+Make sure to have a .env file in your root folder, and another one in your backend folder. The .env file should have the following variables
+
+MYSQL_HOST=
+MYSQL_USER=
+MYSQL_PASSWORD=
+MYSQL_DB=
+
+The variable values should be the same in both the .env files
+
 Create a new folder on your local machine and open the command prompt. Inside your project folder (root), follow the commands.
 
 ```bash
