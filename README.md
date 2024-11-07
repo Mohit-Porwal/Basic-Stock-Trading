@@ -103,4 +103,4 @@ docker-compose up --build
 ```
 
 The docker-compose up --build command will build the images and start the container. Once finished, the images, container, and the volume should be visibile in your docker desktop application.
-If the build is successful, you will notice the url http://localhost:5173/ to access the frontend.
+If the build is successful, you will notice the url http://localhost:5173/ in your terminal to access the frontend.
