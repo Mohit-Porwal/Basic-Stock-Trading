@@ -15,7 +15,7 @@ There are 2 ways to get started with this project
 1. Setup the project on your local machine by following all the steps
 2. Run the docker container without having to setup the project (Requires Docker engine)
 
-Note: Make sure you have Python pre-installed in your local computer
+**Note:** Make sure you have Python pre-installed in your local computer
 
 ## 1. Setup the project on your local machine
 
@@ -42,7 +42,6 @@ CREATE TABLE transactions (
     price DECIMAL(10, 2) NOT NULL,
     total_amount DECIMAL(15, 2),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    -- FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE portfolio (
@@ -51,7 +50,6 @@ CREATE TABLE portfolio (
     ticker VARCHAR(10) NOT NULL,
     quantity DECIMAL(10, 2) NOT NULL,
     average_price DECIMAL(10, 2) NOT NULL
-    -- FOREIGN KEY (user_id) REFERENCES users(id),
 );
 ```
 
