@@ -4,7 +4,6 @@ import React from 'react';
 import HomePage from './pages/HomePage/HomePage.jsx';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage.jsx';
 
-
 import './index.css'
 import TickerInfoPage from './pages/TickerInfoPage/TickerInfoPage.jsx';
 
