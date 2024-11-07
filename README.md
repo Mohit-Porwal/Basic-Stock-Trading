@@ -58,7 +58,7 @@ CREATE TABLE portfolio (
 You can also find the above script in the init.sql file in backend folder.
 
 To setup the backend and frontend, create a new folder on your local machine.
-Open the command prompt and inside your project folder (root), and follow the commands.
+Open the command prompt and inside your project folder (root), follow the commands.
 
 
 ## Setup the backend
@@ -92,3 +92,17 @@ npm run dev (This will start the development environment for the frontend)
 ```
 
 Open http://localhost:5173/ in your browser to see the application.
+
+## 2. Using Docker
+
+Start your docker desktop application which will start the docker engine.
+
+Create a new folder on your local machine and open the command prompt. Inside your project folder (root), follow the commands.
+
+```bash
+git clone https://github.com/Mohit-Porwal/Basic-Stock-Trading.git
+docker-compose up --build
+```
+
+The docker-compose up --build command will build the images and start the container. Once finished, the images, container, and the volume should be visibile in your docker desktop application.
+If the build is successful, you will notice the url http://localhost:5173/ to access the frontend.
