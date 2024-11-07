@@ -1,0 +1,84 @@
+# version: '3.8'
+
+# services:
+#   backend:
+#     build:
+#       context: ./backend
+#     env_file: ./backend/.env
+#     ports:
+#       - "5000:5000"
+#     networks:
+#       - sellscale-network
+#     depends_on:
+#       - db
+
+#   frontend:
+#     build:
+#       context: ./frontend/scalehoodUI
+#     ports:
+#       - "5173:5173"
+#     networks:
+#       - sellscale-network
+
+#   db:
+#     image: mysql:8.0
+#     environment:
+#       MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+#       MYSQL_DATABASE: ${MYSQL_DB}
+#       MYSQL_USER: ${MYSQL_USER}
+#       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+#     volumes:
+#       - mysql-data:/var/lib/mysql
+#     networks:
+#       - sellscale-network
+
+# networks:
+#   sellscale-network:
+
+# volumes:
+#   mysql-data:
+
+
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: mohit
+      MYSQL_HOST: db
+      MYSQL_DATABASE: sellscale
+      MYSQL_USER: mohitporwal
+      MYSQL_PASSWORD: mohit
+    volumes:
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    networks:
+      - sellscale-network
+
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    networks:
+      - sellscale-network
+
+  frontend:
+    build:
+      context: ./frontend/scalehoodUI
+    ports:
+      - "5173:5173"
+    networks:
+      - sellscale-network
+
+volumes:
+  mysql_data:
+
+networks:
+  sellscale-network:
+
