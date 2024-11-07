@@ -78,90 +78,6 @@ def get_top_companies(sectors):
             companies[sector] = [DEFAULT_PLACEHOLDER]
     return companies
 
-@app.route("/", methods=["GET"])
-def home():
-
-    user_id = request.args.get("user_id")
-
-    # Get total balance
-    user_balance = get_user_balance(user_id)
-    if isinstance(user_balance, tuple):
-        total_balance = user_balance[0]
-    else:
-        logger.error(f"User balance retrieval failed for user_id: {user_id}")
-        return jsonify({"error": "User not found"}), 404
-
-    weekly_income = execute_fetchone(
-        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY"
-    )[0]
-    weekly_expense = execute_fetchone(
-        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY"
-    )[0]
-
-    recent_transactions = execute_fetchall(
-        "SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5",
-        (user_id,),
-    )
-
-    # Get top companies by sector
-    sector_wise_top_companies = get_top_companies(sectors)
-
-    response_data = {
-        "total_balance": total_balance,
-        "recent_transactions": recent_transactions,
-        "sector_wise_top_companies": sector_wise_top_companies,
-        "weekly_income": weekly_income,
-        "weekly_expense": weekly_expense,
-    }
-    return jsonify(response_data)
-
-@app.route("/tickerInfo/<ticker>", methods=["GET"])
-def tickerInfo(ticker):
-    try:
-        stock = yf.Ticker(ticker)
-        ticker_info = stock.info
-
-        # Data for header
-        current_price = ticker_info.get("currentPrice", DEFAULT_PLACEHOLDER)
-        company_name = ticker_info.get("longName", " ")
-
-        # Data for company info
-        marketcap = ticker_info.get("marketCap", DEFAULT_PLACEHOLDER)
-        fulltime_employees = ticker_info.get("fullTimeEmployees", DEFAULT_PLACEHOLDER)
-        ceo = ticker_info.get("companyOfficers", [{}])[0].get("name", DEFAULT_PLACEHOLDER)
-        headquarters = (
-            ticker_info.get("city", "")
-            + ", "
-            + ticker_info.get("state", DEFAULT_PLACEHOLDER)
-        )
-        dividend_yield = ticker_info.get("dividendYield", DEFAULT_PLACEHOLDER)
-        avg_volume = ticker_info.get("averageVolume", DEFAULT_PLACEHOLDER)
-        earnings_growth = ticker_info.get("earningsGrowth", DEFAULT_PLACEHOLDER)
-        gross_margins = ticker_info.get("grossMargins", DEFAULT_PLACEHOLDER)
-
-        # Data for about section
-        summary = ticker_info.get("longBusinessSummary", DEFAULT_PLACEHOLDER)
-
-        # Payload for ticker info page
-        return jsonify(
-            {
-                "current_price": current_price,
-                "company_name": company_name,
-                "marketcap": marketcap,
-                "fulltime_employees": fulltime_employees,
-                "ceo": ceo,
-                "headquarters": headquarters,
-                "dividend_yield": dividend_yield,
-                "avg_volume": avg_volume,
-                "earnings_growth": earnings_growth,
-                "gross_margins": gross_margins,
-                "summary": summary,
-            }
-        )
-    except Exception as e:
-        logger.error(f"Error retrieving info for ticker {ticker}: {e}")
-        return jsonify({"error": "An error occurred while fetching ticker info"}), 500
-
 def get_user_balance(user_id):
     """Helper function to get user balance"""
     return execute_fetchone("SELECT total_balance FROM users WHERE id = %s", (user_id,))
@@ -243,7 +159,6 @@ def get_new_average_price(cur, user_id, quantity, price, ticker):
     except Exception as e:
         logger.error(f"Unexpected error while calculating average price: {e}")
         return None
-
 
 def handle_buy_transaction(cur, user_id, ticker, quantity, price, transaction_amount):
     """Function to handle BUY transactions with error handling and exception handling."""
@@ -336,6 +251,89 @@ def handle_sell_transaction(cur, user_id, ticker, quantity, price, transaction_a
         cur.connection.rollback()
         return {"error": "An error occurred while processing the sell transaction"}, 500
 
+@app.route("/", methods=["GET"])
+def home():
+
+    user_id = request.args.get("user_id")
+
+    # Get total balance
+    user_balance = get_user_balance(user_id)
+    if isinstance(user_balance, tuple):
+        total_balance = user_balance[0]
+    else:
+        logger.error(f"User balance retrieval failed for user_id: {user_id}")
+        return jsonify({"error": "User not found"}), 404
+
+    weekly_income = execute_fetchone(
+        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Sell' AND timestamp >= NOW() - INTERVAL 7 DAY"
+    )[0]
+    weekly_expense = execute_fetchone(
+        "SELECT SUM(total_amount) FROM transactions WHERE trade_type = 'Buy' AND timestamp >= NOW() - INTERVAL 7 DAY"
+    )[0]
+
+    recent_transactions = execute_fetchall(
+        "SELECT * FROM transactions WHERE user_id = %s ORDER BY timestamp DESC LIMIT 5",
+        (user_id,),
+    )
+
+    # Get top companies by sector
+    sector_wise_top_companies = get_top_companies(sectors)
+
+    response_data = {
+        "total_balance": total_balance,
+        "recent_transactions": recent_transactions,
+        "sector_wise_top_companies": sector_wise_top_companies,
+        "weekly_income": weekly_income,
+        "weekly_expense": weekly_expense,
+    }
+    return jsonify(response_data)
+
+@app.route("/tickerInfo/<ticker>", methods=["GET"])
+def tickerInfo(ticker):
+    try:
+        stock = yf.Ticker(ticker)
+        ticker_info = stock.info
+
+        # Data for header
+        current_price = ticker_info.get("currentPrice", DEFAULT_PLACEHOLDER)
+        company_name = ticker_info.get("longName", " ")
+
+        # Data for company info
+        marketcap = ticker_info.get("marketCap", DEFAULT_PLACEHOLDER)
+        fulltime_employees = ticker_info.get("fullTimeEmployees", DEFAULT_PLACEHOLDER)
+        ceo = ticker_info.get("companyOfficers", [{}])[0].get("name", DEFAULT_PLACEHOLDER)
+        headquarters = (
+            ticker_info.get("city", "")
+            + ", "
+            + ticker_info.get("state", DEFAULT_PLACEHOLDER)
+        )
+        dividend_yield = ticker_info.get("dividendYield", DEFAULT_PLACEHOLDER)
+        avg_volume = ticker_info.get("averageVolume", DEFAULT_PLACEHOLDER)
+        earnings_growth = ticker_info.get("earningsGrowth", DEFAULT_PLACEHOLDER)
+        gross_margins = ticker_info.get("grossMargins", DEFAULT_PLACEHOLDER)
+
+        # Data for about section
+        summary = ticker_info.get("longBusinessSummary", DEFAULT_PLACEHOLDER)
+
+        # Payload for ticker info page
+        return jsonify(
+            {
+                "current_price": current_price,
+                "company_name": company_name,
+                "marketcap": marketcap,
+                "fulltime_employees": fulltime_employees,
+                "ceo": ceo,
+                "headquarters": headquarters,
+                "dividend_yield": dividend_yield,
+                "avg_volume": avg_volume,
+                "earnings_growth": earnings_growth,
+                "gross_margins": gross_margins,
+                "summary": summary,
+            }
+        )
+    except Exception as e:
+        logger.error(f"Error retrieving info for ticker {ticker}: {e}")
+        return jsonify({"error": "An error occurred while fetching ticker info"}), 500
 
 @app.route("/trade", methods=["POST"])
 def trade():
@@ -344,9 +342,9 @@ def trade():
     user_id = transaction_details.get("user_id")
     transaction_type = transaction_details.get("transaction_type", "").upper()
     ticker = transaction_details.get("ticker")
-    quantity = Decimal(transaction_details.get("quantity", 0))
+    quantity = round(Decimal(transaction_details.get("quantity", 0)), 2)
     transaction_amount = Decimal(transaction_details.get("transaction_amount", 0))
-    price = Decimal(transaction_details.get("price", 0))
+    price = round(Decimal(transaction_details.get("price", 0)),2)
 
     if not all([user_id, transaction_type, ticker, quantity, transaction_amount]):
         return jsonify({"error": "Missing transaction details"}), 400
