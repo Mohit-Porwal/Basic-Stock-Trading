@@ -15,9 +15,18 @@ There are 2 ways to get started with this project
 1. Setup the project on your local machine by following all the steps
 2. Run the docker container without having to setup the project (Requires Docker engine)
 
+Note: Make sure you have Python pre-installed in your local computer
+
 ## 1. Setup the project on your local machine
 
 Create a new folder on your local machine.
-Open the command prompt. Inside your project folder, type the below commands
+Open the command prompt and inside your project folder (root), type the below commands to setup the backend
 
-```git clone https://github.com/Mohit-Porwal/Basic-Stock-Trading.git
+```bash
+git clone https://github.com/Mohit-Porwal/Basic-Stock-Trading.git
+cd basic-stock-trading
+cd backend
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+```
