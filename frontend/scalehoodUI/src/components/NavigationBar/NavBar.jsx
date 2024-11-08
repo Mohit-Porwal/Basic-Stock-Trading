@@ -41,7 +41,7 @@ const NavBar = () => {
         
         {/* User Greeting */}
         <Box sx={{ ml: 'auto' }}>
-          <Typography variant="h6" sx={{ color: 'white', fontWeight: 700 }}>Hi Mohit!</Typography>
+          <Typography variant="h6" sx={{ color: 'red', fontWeight: 700 }}>Hi Mohit!</Typography>
         </Box>
       </Toolbar>
     </AppBar>
@@ -86,7 +86,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
     // Red placeholder color
     '&::placeholder': {
-      color: 'white', 
+      color: 'red', 
       opacity: 1,
     },
   },
